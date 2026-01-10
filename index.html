@@ -331,4 +331,214 @@
       const fim = it.fim_de_jogo ? "🔵" : "⚪";
       const st = String(it.status || "ag_condicao");
 
-      c
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${meta.nome || it.id}</td>
+        <td>${meta.tipo || "-"}</td>
+        <td>${meta.turno || "-"}</td>
+        <td>${it.ultimo_job || "-"}</td>
+        <td>${it.termino_real || "-"}</td>
+        <td style="text-align:center;font-size:16px;">${fim}</td>
+        <td>
+          <div class="status-cell">
+            <span class="dot ${dotClass(st)}"></span>
+            <span>${statusLabel(st)}</span>
+          </div>
+        </td>
+        <td style="white-space:normal;">${(it.nota || "").replaceAll("<","&lt;").replaceAll(">","&gt;")}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  function gerarResumo(){
+    const cat = catalogMap();
+    const key = getDiaKey();
+    const { dia, itens } = getItensDoDia();
+    const [yy, mm] = state.month.split("-");
+    const odate = `${state.day}/${mm}/${yy}`;
+
+    const byTipo = new Map();
+    itens.forEach(it => {
+      const meta = cat.get(it.id) || {};
+      const tipo = meta.tipo || "Outros";
+      if(!byTipo.has(tipo)) byTipo.set(tipo, []);
+      byTipo.get(tipo).push({ it, meta });
+    });
+
+    const tiposOrdenados = ["Rotativo", "Rotativos", "Parcelado", "Parcelados", "Modelos", "Semanal", "Gestão PJ e Alto Risco"];
+    const tipos = [...byTipo.keys()].sort((a,b)=>{
+      const ia = tiposOrdenados.indexOf(a);
+      const ib = tiposOrdenados.indexOf(b);
+      if(ia === -1 && ib === -1) return a.localeCompare(b);
+      if(ia === -1) return 1;
+      if(ib === -1) return -1;
+      return ia - ib;
+    });
+
+    let lines = [];
+    lines.push("Acompanhamento Malhas");
+    lines.push("");
+    lines.push(`Odate: ${odate}`);
+    lines.push("");
+
+    tipos.forEach(tipo => {
+      lines.push(`- ${tipo}:`);
+      byTipo.get(tipo).forEach(({it, meta}) => {
+        const fim = it.fim_de_jogo ? "🔵 " : "";
+        const st = statusLabel(it.status);
+        const nome = meta.nome || it.id;
+        const real = it.termino_real ? ` (${it.termino_real})` : "";
+        const nota = it.nota ? ` - ${it.nota}` : "";
+        lines.push(`${fim}${st} - ${nome}${real}${nota}`);
+      });
+      lines.push("");
+    });
+
+    const updated = (dia && (dia.updatedAt || dia.updated_at)) ? (dia.updatedAt || dia.updated_at) : "";
+    document.getElementById("resumoInfo").textContent = updated ? `JSON updatedAt: ${updated}` : `Dia: ${key}`;
+    document.getElementById("resumoText").value = lines.join("\n");
+  }
+
+  function computeMonthStats(){
+    const prefix = state.month + "-";
+    const dias = rawData.dias || {};
+    let totalAbend = 0;
+    let totalCont = 0;
+
+    const perDay = {}; // dd => total
+    const daysWithAny = new Set();
+
+    Object.entries(dias).forEach(([dateKey, dayObj]) => {
+      if(!dateKey.startsWith(prefix)) return;
+      const dd = dateKey.split("-")[2];
+      const itens = (dayObj && Array.isArray(dayObj.itens)) ? dayObj.itens : [];
+      let a = 0, c = 0;
+      itens.forEach(it => {
+        if(it.status === "abend") a++;
+        if(it.status === "contingencia") c++;
+      });
+      if(a+c > 0){
+        daysWithAny.add(dateKey);
+        perDay[dd] = (perDay[dd] || 0) + (a+c);
+      }
+      totalAbend += a;
+      totalCont += c;
+    });
+
+    return { totalAbend, totalCont, daysWithAny: daysWithAny.size, perDay };
+  }
+
+  function renderIndicadores(){
+    const s = computeMonthStats();
+    document.getElementById("kpiAbend").textContent = String(s.totalAbend);
+    document.getElementById("kpiCont").textContent = String(s.totalCont);
+    document.getElementById("kpiDias").textContent = String(s.daysWithAny);
+
+    const [yy, mm] = state.month.split("-");
+    const max = daysInMonth(Number(yy), Number(mm));
+
+    const values = [];
+    for(let d=1; d<=max; d++){
+      values.push(s.perDay[pad2(d)] || 0);
+    }
+    const maxV = Math.max(1, ...values);
+
+    if(s.totalAbend + s.totalCont === 0){
+      document.getElementById("barsMes").textContent = "Sem ocorrências de Abend/Contingência no mês.";
+      return;
+    }
+
+    let html = "";
+    for(let d=1; d<=max; d++){
+      const dd = pad2(d);
+      const val = s.perDay[dd] || 0;
+      const pct = Math.max(3, (val / maxV) * 100);
+      html += `
+        <div style="display:flex;align-items:center;gap:10px;margin:6px 0;font-size:12px;">
+          <div style="width:60px;font-weight:800;">${dd}/${mm}</div>
+          <div style="flex:1;background:#21262d;border-radius:999px;height:14px;position:relative;">
+            <div style="height:100%;width:${pct}%;border-radius:999px;background:#f85149;"></div>
+            <div style="position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:10px;color:#e6edf3;">
+              ${val}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+    document.getElementById("barsMes").innerHTML = html;
+  }
+
+  function showTab(tab){
+    document.getElementById("viewQuadro").style.display = tab === "quadro" ? "block" : "none";
+    document.getElementById("viewResumo").style.display = tab === "resumo" ? "block" : "none";
+    document.getElementById("viewIndicadores").style.display = tab === "indicadores" ? "block" : "none";
+  }
+
+  async function loadJson(){
+    const url = JSON_URL + "?t=" + Date.now();
+    const res = await fetch(url, { cache: "no-store" });
+    if(!res.ok) throw new Error("HTTP " + res.status);
+    return res.json();
+  }
+
+  async function refresh(){
+    try{
+      setSyncPill("Sync: carregando...");
+      rawData = await loadJson();
+
+      const key = getDiaKey();
+      const dia = rawData.dias && rawData.dias[key];
+      const updated = dia && (dia.updatedAt || dia.updated_at);
+
+      setSyncPill(updated ? `Sync: ${updated}` : `Sync: ${nowISO()}`);
+
+      renderQuadro();
+      renderIndicadores();
+    }catch(e){
+      setSyncPill("Sync: falhou (verifique malhas.json)");
+      console.error(e);
+    }
+  }
+
+  function init(){
+    buildMonthSelect();
+    buildDaySelect();
+    setOdate();
+
+    document.getElementById("monthSelect").addEventListener("change", (e)=>{
+      state.month = e.target.value;
+      buildDaySelect();
+      setOdate();
+      refresh();
+    });
+
+    document.getElementById("daySelect").addEventListener("change", (e)=>{
+      state.day = e.target.value;
+      setOdate();
+      refresh();
+    });
+
+    document.querySelectorAll(".tab-btn").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
+        btn.classList.add("active");
+        const tab = btn.getAttribute("data-tab");
+        showTab(tab);
+        if(tab === "resumo") gerarResumo();
+        if(tab === "indicadores") renderIndicadores();
+      });
+    });
+
+    document.getElementById("btnGerarResumo").addEventListener("click", ()=>{
+      gerarResumo();
+    });
+
+    refresh();
+    setInterval(refresh, 15000);
+  }
+
+  document.addEventListener("DOMContentLoaded", init);
+</script>
+</body>
+</html>
