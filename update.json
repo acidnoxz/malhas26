@@ -1,0 +1,10 @@
+{
+  "date": "2026-01-10",
+  "updatedAt": "2026-01-10T02:25:00-03:00",
+  "itens": [
+    { "nome": "ADMISSAO", "status": "ok", "ultimo_job": "05:07", "termino_real": "05:07", "fim_de_jogo": true, "nota": "" },
+    { "nome": "CONSIGNADO", "status": "abend", "ultimo_job": "04:46", "termino_real": "04:46", "fim_de_jogo": false, "nota": "Falha no fluxo, em análise" },
+    { "nome": "CONSORCIO", "status": "contingencia", "ultimo_job": "02:51", "termino_real": "02:51", "fim_de_jogo": true, "nota": "Rodou em contingência" },
+    { "nome": "CP INVESTIDOR", "status": "ok", "ultimo_job": "01:43", "termino_real": "01:43", "fim_de_jogo": true, "nota": "" }
+  ]
+}
