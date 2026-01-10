@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Painel de Malhas 2026</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0d1117;
+      color: #e6edf3;
+      padding: 20px;
+    }
+
+    h1 {
+      margin-bottom: 5px;
+    }
+
+    .subtitle {
+      color: #8b949e;
+      margin-bottom: 20px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #161b22;
+    }
+
+    th, td {
+      padding: 10px;
+      border-bottom: 1px solid #30363d;
+      text-align: left;
+    }
+
+    th {
+      background: #21262d;
+    }
+
+    .status {
+      font-weight: bold;
+    }
+
+    .ok {
+      color: #2ea043;
+    }
+
+    .abend {
+      color: #f85149;
+    }
+
+    .contingencia {
+      color: #d29922;
+    }
+
+    .pendente {
+      color: #8b949e;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Painel de Malhas</h1>
+  <div class="subtitle">Atualização automática via JSON</div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Malha</th>
+        <th>Tipo</th>
+        <th>Último Job</th>
+        <th>Turno</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody id="malhas-body"></tbody>
+  </table>
+
+  <script>
+    fetch("malhas.json")
+      .then(response => response.json())
+      .then(data => {
+        const tbody = document.getElementById("malhas-body");
+
+        data.malhas.forEach(malha => {
+          const tr = document.createElement("tr");
+
+          tr.innerHTML = `
+            <td>${malha.nome}</td>
+            <td>${malha.tipo}</td>
+            <td>${malha.ultimo_job}</td>
+            <td>${malha.turno}</td>
+            <td class="status ${malha.status}">
+              ${malha.status.toUpperCase()}
+            </td>
+          `;
+
+          tbody.appendChild(tr);
+        });
+      })
+      .catch(err => {
+        console.error("Erro ao carregar malhas.json", err);
+      });
+  </script>
+
+</body>
+</html>
