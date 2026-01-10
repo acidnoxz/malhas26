@@ -13,41 +13,12 @@
       background:#0d1117;
       color:#e6edf3;
     }
+    h1{ margin:0 0 6px 0; font-size:32px; letter-spacing:-0.3px; }
+    .subtitle{ margin:0 0 14px 0; color:#9aa4b2; font-size:14px; line-height:1.35; }
 
-    h1{
-      margin:0 0 6px 0;
-      font-size:32px;
-      letter-spacing:-0.3px;
-    }
-    .subtitle{
-      margin:0 0 14px 0;
-      color:#9aa4b2;
-      font-size:14px;
-      line-height:1.35;
-    }
-
-    .topbar{
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px 12px;
-      align-items:center;
-      margin:10px 0 12px 0;
-    }
-    .control{
-      display:flex;
-      align-items:center;
-      gap:8px;
-      background:#161b22;
-      border:1px solid #30363d;
-      border-radius:999px;
-      padding:8px 10px;
-    }
-    .control label{
-      color:#c9d1d9;
-      font-size:13px;
-      font-weight:800;
-      margin-right:4px;
-    }
+    .topbar{ display:flex; flex-wrap:wrap; gap:10px 12px; align-items:center; margin:10px 0 12px 0; }
+    .control{ display:flex; align-items:center; gap:8px; background:#161b22; border:1px solid #30363d; border-radius:999px; padding:8px 10px; }
+    .control label{ color:#c9d1d9; font-size:13px; font-weight:800; margin-right:4px; }
     select, input, button{
       border-radius:999px;
       border:1px solid #30363d;
@@ -73,12 +44,7 @@
       white-space:nowrap;
     }
 
-    .tabs{
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px;
-      margin:10px 0 10px 0;
-    }
+    .tabs{ display:flex; flex-wrap:wrap; gap:10px; margin:10px 0 10px 0; }
     .tab{
       cursor:pointer;
       border-radius:999px;
@@ -89,11 +55,7 @@
       font-size:13px;
       font-weight:900;
     }
-    .tab.active{
-      background:#1f6feb;
-      border-color:#1f6feb;
-      color:#fff;
-    }
+    .tab.active{ background:#1f6feb; border-color:#1f6feb; color:#fff; }
 
     .card{
       background:#161b22;
@@ -104,37 +66,15 @@
     }
 
     .legend{
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px 14px;
-      align-items:center;
-      padding:10px 12px;
-      border-radius:14px;
-      border:1px solid #30363d;
-      background:#0f141b;
-      margin:10px 0 12px 0;
-      font-size:13px;
-      color:#c9d1d9;
+      display:flex; flex-wrap:wrap; gap:10px 14px; align-items:center;
+      padding:10px 12px; border-radius:14px;
+      border:1px solid #30363d; background:#0f141b;
+      margin:10px 0 12px 0; font-size:13px; color:#c9d1d9;
     }
-    .legend .title{
-      font-weight:900;
-      color:#fff;
-      margin-right:6px;
-    }
-    .legend-item{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      white-space:nowrap;
-    }
+    .legend .title{ font-weight:900; color:#fff; margin-right:6px; }
+    .legend-item{ display:inline-flex; align-items:center; gap:8px; white-space:nowrap; }
 
-    .dot{
-      width:12px;
-      height:12px;
-      border-radius:50%;
-      border:1px solid rgba(255,255,255,0.15);
-      display:inline-block;
-    }
+    .dot{ width:12px; height:12px; border-radius:50%; border:1px solid rgba(255,255,255,0.15); display:inline-block; }
     .dot-em_execucao{ background:#d29922; }
     .dot-ok{ background:#2ea043; }
     .dot-contingencia{ background:#1f6feb; }
@@ -144,186 +84,81 @@
     .dot-sem_exec{ background:#010409; border:1px solid #30363d; }
 
     .filters{
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px 12px;
-      align-items:center;
+      display:flex; flex-wrap:wrap; gap:10px 12px; align-items:center;
       margin:10px 0 12px 0;
     }
-    .filters .group{
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px;
-      align-items:center;
-    }
-    .filters .group .label{
-      font-size:13px;
-      font-weight:900;
-      color:#c9d1d9;
-      margin-right:6px;
-    }
+    .filters .group{ display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+    .filters .group .label{ font-size:13px; font-weight:900; color:#c9d1d9; margin-right:6px; }
+
     .chip{
-      cursor:pointer;
-      user-select:none;
-      border-radius:999px;
-      padding:8px 12px;
-      border:1px solid #30363d;
-      background:#0d1117;
-      font-size:13px;
-      font-weight:900;
-      color:#e6edf3;
+      cursor:pointer; user-select:none;
+      border-radius:999px; padding:8px 12px;
+      border:1px solid #30363d; background:#0d1117;
+      font-size:13px; font-weight:900; color:#e6edf3;
     }
-    .chip.active{
-      background:#fff;
-      color:#0d1117;
-      border-color:#fff;
-    }
+    .chip.active{ background:#fff; color:#0d1117; border-color:#fff; }
 
     table{
-      width:100%;
-      border-collapse:separate;
-      border-spacing:0;
-      overflow:hidden;
-      border-radius:14px;
-      border:1px solid #30363d;
+      width:100%; border-collapse:separate; border-spacing:0;
+      overflow:hidden; border-radius:14px; border:1px solid #30363d;
     }
     thead th{
-      background:#21262d;
-      color:#e6edf3;
-      font-size:12px;
-      text-transform:none;
-      letter-spacing:0.2px;
-      padding:10px 10px;
-      border-bottom:1px solid #30363d;
-      white-space:nowrap;
-      text-align:left;
+      background:#21262d; color:#e6edf3;
+      font-size:12px; padding:10px 10px;
+      border-bottom:1px solid #30363d; white-space:nowrap; text-align:left;
     }
     tbody td{
-      padding:10px 10px;
-      border-bottom:1px solid #30363d;
-      font-size:13px;
-      color:#e6edf3;
-      white-space:nowrap;
-      vertical-align:top;
+      padding:10px 10px; border-bottom:1px solid #30363d;
+      font-size:13px; color:#e6edf3; white-space:nowrap; vertical-align:top;
     }
     tbody tr:nth-child(even){ background:#0f141b; }
     tbody tr:last-child td{ border-bottom:none; }
 
-    .status-cell{
-      display:flex;
-      align-items:center;
-      gap:8px;
-      font-weight:900;
-    }
-    .note{
-      white-space:normal;
-      color:#c9d1d9;
-      max-width:420px;
-    }
+    .status-cell{ display:flex; align-items:center; gap:8px; font-weight:900; }
+    .note{ white-space:normal; color:#c9d1d9; max-width:520px; }
     .muted{ color:#9aa4b2; }
 
-    .kpis{
-      display:grid;
-      grid-template-columns:repeat(auto-fit, minmax(220px,1fr));
-      gap:12px;
-      margin-top:10px;
-    }
-    .kpi-title{
-      color:#9aa4b2;
-      font-size:13px;
-      font-weight:900;
-      margin-bottom:6px;
-    }
-    .kpi-value{
-      font-size:34px;
-      font-weight:1000;
-      line-height:1;
-    }
-
-    textarea{
-      width:100%;
-      min-height:260px;
-      border-radius:14px;
-      border:1px solid #30363d;
-      background:#0d1117;
-      color:#e6edf3;
-      padding:12px;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      font-size:13px;
-      resize:vertical;
-    }
-
-    .hint{
-      margin-top:10px;
-      font-size:12px;
-      color:#9aa4b2;
-    }
-
-    .footer{
-      margin-top:14px;
-      font-size:11px;
-      color:#8b949e;
-    }
-
     .badge{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      padding:4px 10px;
-      border-radius:999px;
-      font-weight:1000;
-      font-size:12px;
-      border:1px solid #30363d;
-      background:#0d1117;
-      color:#e6edf3;
+      display:inline-flex; align-items:center; justify-content:center;
+      padding:4px 10px; border-radius:999px;
+      font-weight:1000; font-size:12px;
+      border:1px solid #30363d; background:#0d1117; color:#e6edf3;
       white-space:nowrap;
     }
     .badge.T1{ border-color:#1f6feb; }
     .badge.T2{ border-color:#d29922; }
     .badge.T3{ border-color:#f85149; }
 
-    .quick-grid{
-      display:grid;
-      grid-template-columns:repeat(auto-fit, minmax(240px, 1fr));
-      gap:12px;
-      margin-top:10px;
-    }
-    .quick-item{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
+    textarea{
+      width:100%; min-height:260px; border-radius:14px;
+      border:1px solid #30363d; background:#0d1117; color:#e6edf3;
       padding:12px;
-      border-radius:14px;
-      border:1px solid #30363d;
-      background:#0f141b;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size:13px; resize:vertical;
     }
-    .quick-left{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      min-width:0;
+
+    .quick-grid{ display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:12px; margin-top:10px; }
+    .quick-item{
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      padding:12px; border-radius:14px; border:1px solid #30363d; background:#0f141b;
     }
-    .quick-name{
-      font-weight:1000;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      max-width:220px;
-    }
-    .quick-meta{
-      font-size:12px;
-      color:#9aa4b2;
-      margin-top:2px;
-    }
+    .quick-left{ display:flex; align-items:center; gap:10px; min-width:0; }
+    .quick-name{ font-weight:1000; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:240px; }
+    .quick-meta{ font-size:12px; color:#9aa4b2; margin-top:2px; }
+
+    .kpis{ display:grid; grid-template-columns:repeat(auto-fit, minmax(220px,1fr)); gap:12px; margin-top:10px; }
+    .kpi-title{ color:#9aa4b2; font-size:13px; font-weight:900; margin-bottom:6px; }
+    .kpi-value{ font-size:34px; font-weight:1000; line-height:1; }
+
+    .hint{ margin-top:10px; font-size:12px; color:#9aa4b2; }
+    .footer{ margin-top:14px; font-size:11px; color:#8b949e; }
   </style>
 </head>
 
 <body>
   <h1>Painel de Malhas por Turno - Janeiro 2026</h1>
   <p class="subtitle">
-    A equipe acompanha status, término real e “fim de jogo”. Use as abas para alternar entre o quadro diário,
-    visão rápida por status, resumo para o time e indicadores do mês.
+    Painel read-only com fonte em malhas.json. Tabela no padrão RTB: previsto, iniciado e finalizado, com filtros e resumo para o time.
   </p>
 
   <div class="topbar">
@@ -377,7 +212,7 @@
       <span class="chip" data-filter="categoria" data-value="Rotativos">Rotativos</span>
       <span class="chip" data-filter="categoria" data-value="Parcelados">Parcelados</span>
       <span class="chip" data-filter="categoria" data-value="Modelos">Modelos</span>
-      <span class="chip" data-filter="categoria" data-value="Gestão PJ/Alto Risco">Gestão PJ/Alto Risco</span>
+      <span class="chip" data-filter="categoria" data-value="Gestão PJ e Alto Risco">Gestão PJ e Alto Risco</span>
       <span class="chip" data-filter="categoria" data-value="Semanal">Semanal</span>
     </div>
 
@@ -388,7 +223,6 @@
     </div>
   </div>
 
-  <!-- QUADRO -->
   <div id="viewQuadro" class="card">
     <table>
       <thead>
@@ -399,7 +233,8 @@
           <th>Início previsto</th>
           <th>Término previsto</th>
           <th>Frequência</th>
-          <th>Término real</th>
+          <th>Iniciado</th>
+          <th>Finalizado</th>
           <th>Status</th>
           <th>Fim de jogo</th>
           <th>Nota</th>
@@ -410,13 +245,11 @@
     <div class="hint">Read-only. Atualize o malhas.json via automação e o painel reflete.</div>
   </div>
 
-  <!-- STATUS RÁPIDO -->
   <div id="viewStatus" class="card" style="display:none;">
     <div class="hint">Visão rápida por status do dia selecionado.</div>
     <div id="quickGrid" class="quick-grid"></div>
   </div>
 
-  <!-- RESUMO -->
   <div id="viewResumo" class="card" style="display:none;">
     <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:10px;">
       <button id="btnGerarResumo">Gerar resumo</button>
@@ -426,7 +259,6 @@
     <div class="hint">Copie e cole no Teams. 🔵 = fim de jogo validado.</div>
   </div>
 
-  <!-- INDICADORES -->
   <div id="viewIndicadores" class="card" style="display:none;">
     <div class="kpis">
       <div class="card">
@@ -449,19 +281,18 @@
     </div>
   </div>
 
-  <!-- INSTRUÇÕES -->
   <div id="viewInstrucoes" class="card" style="display:none;">
     <div style="font-weight:1000;margin-bottom:10px;">Como usar</div>
     <ul style="margin:0;padding-left:18px;color:#c9d1d9;line-height:1.5;">
-      <li>Selecione o mês e o dia (Odate) no topo.</li>
-      <li>Use os filtros para encontrar malhas por turno, categoria ou busca.</li>
-      <li>Quadro diário mostra a tabela completa do dia.</li>
-      <li>Status das malhas mostra uma visão rápida em cards.</li>
-      <li>Resumo do dia gera texto pronto para enviar no Teams.</li>
-      <li>Indicadores do mês soma ABEND e contingência do mês.</li>
-      <li>Este painel é read-only, não edita dados. A fonte é o <span class="badge">malhas.json</span>.</li>
+      <li>Selecione mês e dia (Odate) no topo.</li>
+      <li>Use os filtros para turno, categoria e busca.</li>
+      <li>Quadro diário replica o padrão RTB: previsto, iniciado e finalizado.</li>
+      <li>Status das malhas é visão rápida em cards.</li>
+      <li>Resumo do dia gera texto pronto para Teams.</li>
+      <li>Indicadores soma ABEND e contingência no mês.</li>
+      <li>Painel é read-only. Fonte é malhas.json.</li>
     </ul>
-    <div class="hint">Próxima etapa: automação do malhas.json via Databricks ou Control-M.</div>
+    <div class="hint">Próximo passo: automação do malhas.json via Databricks ou Control-M.</div>
   </div>
 
   <div class="footer">
@@ -471,15 +302,10 @@
 <script>
   const JSON_URL = "./malhas.json";
 
-  const MONTHS_PT = [
-    "Janeiro","Fevereiro","Março","Abril","Maio","Junho",
-    "Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"
-  ];
+  const MONTHS_PT = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
 
   function pad2(n){ return String(n).padStart(2,"0"); }
-  function isLeapYear(year){
-    return (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
-  }
+  function isLeapYear(year){ return (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0); }
   function daysInMonth(year, month1to12){
     if(month1to12 === 2) return isLeapYear(year) ? 29 : 28;
     if([4,6,9,11].includes(month1to12)) return 30;
@@ -498,23 +324,11 @@
     };
     return map[s] || String(s || "-");
   }
-  function dotClass(s){
-    const safe = String(s || "ag_condicao");
-    return "dot-" + safe;
-  }
-
-  function safeText(v){
-    return String(v ?? "").replaceAll("<","&lt;").replaceAll(">","&gt;");
-  }
+  function dotClass(s){ return "dot-" + String(s || "ag_condicao"); }
+  function safeText(v){ return String(v ?? "").replaceAll("<","&lt;").replaceAll(">","&gt;"); }
 
   let rawData = null;
-  let state = {
-    month: "2026-01",
-    day: "01",
-    filtroTurno: "Todos",
-    filtroCategoria: "Todas",
-    busca: ""
-  };
+  let state = { month: "2026-01", day: "01", filtroTurno: "Todos", filtroCategoria: "Todas", busca: "" };
 
   function setPills(){
     const [yy, mm] = state.month.split("-");
@@ -550,9 +364,7 @@
     sel.value = state.day;
   }
 
-  function getDiaKey(){
-    return `${state.month}-${state.day}`;
-  }
+  function getDiaKey(){ return `${state.month}-${state.day}`; }
 
   function catalogMap(){
     const m = new Map();
@@ -568,7 +380,6 @@
   }
 
   function normalizeCategoria(meta){
-    // aceitamos categoria ou tipo como fallback
     return meta.categoria || meta.tipo || "Outros";
   }
 
@@ -577,7 +388,12 @@
     const categoria = normalizeCategoria(meta);
 
     if(state.filtroTurno !== "Todos" && turnoFinal !== state.filtroTurno) return false;
-    if(state.filtroCategoria !== "Todas" && categoria !== state.filtroCategoria) return false;
+
+    if(state.filtroCategoria !== "Todas"){
+      // compatibilidade: se seu JSON antigo usa "Parcelado" e agora o filtro é "Parcelados"
+      const cat = categoria;
+      if(cat !== state.filtroCategoria) return false;
+    }
 
     const q = (state.busca || "").trim().toLowerCase();
     if(q){
@@ -585,6 +401,12 @@
       if(!name.includes(q)) return false;
     }
     return true;
+  }
+
+  function categoryOrderKey(cat){
+    const order = ["Rotativos","Parcelados","Modelos","Gestão PJ e Alto Risco","Semanal","Outros"];
+    const i = order.indexOf(cat);
+    return i === -1 ? 999 : i;
   }
 
   function renderQuadro(){
@@ -596,7 +418,7 @@
 
     if(!itens.length){
       const tr = document.createElement("tr");
-      tr.innerHTML = `<td colspan="10" class="muted">Sem dados para ${getDiaKey()} no JSON.</td>`;
+      tr.innerHTML = `<td colspan="11" class="muted">Sem dados para ${getDiaKey()} no JSON.</td>`;
       tbody.appendChild(tr);
       return;
     }
@@ -612,30 +434,30 @@
       const inicioPrev = meta.inicio_previsto || "-";
       const terminoPrev = meta.termino_previsto || "-";
       const freq = meta.frequencia || meta.freq || "-";
+
+      const inicioReal = it.inicio_real || "-";
       const terminoReal = it.termino_real || "-";
+
       const st = String(it.status || "ag_condicao");
       const fim = it.fim_de_jogo ? "🔵" : "⚪";
       const nota = it.nota || "";
 
-      rows.push({
-        categoria, malha, turnoFinal, inicioPrev, terminoPrev, freq,
-        terminoReal, st, fim, nota
-      });
+      rows.push({ categoria, malha, turnoFinal, inicioPrev, terminoPrev, freq, inicioReal, terminoReal, st, fim, nota });
     });
 
     if(!rows.length){
       const tr = document.createElement("tr");
-      tr.innerHTML = `<td colspan="10" class="muted">Nenhum item com os filtros atuais.</td>`;
+      tr.innerHTML = `<td colspan="11" class="muted">Nenhum item com os filtros atuais.</td>`;
       tbody.appendChild(tr);
       return;
     }
 
-    // ordenação: categoria -> turno -> malha
     rows.sort((a,b)=>{
-      const c = a.categoria.localeCompare(b.categoria);
-      if(c!==0) return c;
-      const t = String(a.turnoFinal).localeCompare(String(b.turnoFinal));
-      if(t!==0) return t;
+      const ca = categoryOrderKey(a.categoria) - categoryOrderKey(b.categoria);
+      if(ca !== 0) return ca;
+      // ordena por término previsto quando existir
+      const ta = String(a.terminoPrev), tb = String(b.terminoPrev);
+      if(ta !== tb) return ta.localeCompare(tb);
       return a.malha.localeCompare(b.malha);
     });
 
@@ -648,6 +470,7 @@
         <td>${safeText(r.inicioPrev)}</td>
         <td>${safeText(r.terminoPrev)}</td>
         <td>${safeText(r.freq)}</td>
+        <td>${safeText(r.inicioReal)}</td>
         <td>${safeText(r.terminoReal)}</td>
         <td>
           <div class="status-cell">
@@ -674,7 +497,6 @@
       return;
     }
 
-    // agrupando por status
     const order = ["abend","contingencia","em_execucao","nao_comecou","ag_condicao","ok","sem_exec"];
     const entries = [];
 
@@ -687,9 +509,10 @@
       const categoria = normalizeCategoria(meta);
       const turnoFinal = meta.turno_final || meta.turno || "-";
       const fim = it.fim_de_jogo ? "🔵" : "⚪";
-      const real = it.termino_real || it.ultimo_job || "-";
+      const inicioReal = it.inicio_real || "-";
+      const terminoReal = it.termino_real || "-";
 
-      entries.push({ st, malha, categoria, turnoFinal, fim, real });
+      entries.push({ st, malha, categoria, turnoFinal, fim, inicioReal, terminoReal });
     });
 
     if(!entries.length){
@@ -700,6 +523,8 @@
     entries.sort((a,b)=>{
       const ia = order.indexOf(a.st); const ib = order.indexOf(b.st);
       if(ia !== ib) return (ia===-1?999:ia) - (ib===-1?999:ib);
+      const ca = categoryOrderKey(a.categoria) - categoryOrderKey(b.categoria);
+      if(ca !== 0) return ca;
       return a.malha.localeCompare(b.malha);
     });
 
@@ -711,7 +536,7 @@
           <span class="dot ${dotClass(e.st)}"></span>
           <div style="min-width:0;">
             <div class="quick-name">${safeText(e.malha)}</div>
-            <div class="quick-meta">${safeText(e.categoria)} • ${safeText(e.turnoFinal)} • ${safeText(e.real)} • ${e.fim}</div>
+            <div class="quick-meta">${safeText(e.categoria)} • ${safeText(e.turnoFinal)} • Ini: ${safeText(e.inicioReal)} • Fin: ${safeText(e.terminoReal)} • ${e.fim}</div>
           </div>
         </div>
         <div style="font-weight:1000;">${safeText(statusLabel(e.st))}</div>
@@ -728,7 +553,6 @@
     const [yy, mm] = state.month.split("-");
     const odate = `${state.day}/${mm}/${yy}`;
 
-    // agrupamento por categoria
     const byCat = new Map();
     itens.forEach(it=>{
       const meta = cat.get(it.id) || {};
@@ -739,9 +563,9 @@
       byCat.get(categoria).push({ it, meta });
     });
 
-    const ordemCats = ["Rotativos","Parcelados","Modelos","Gestão PJ/Alto Risco","Semanal","Outros"];
+    const order = ["Rotativos","Parcelados","Modelos","Gestão PJ e Alto Risco","Semanal","Outros"];
     const cats = [...byCat.keys()].sort((a,b)=>{
-      const ia = ordemCats.indexOf(a), ib = ordemCats.indexOf(b);
+      const ia = order.indexOf(a), ib = order.indexOf(b);
       if(ia===-1 && ib===-1) return a.localeCompare(b);
       if(ia===-1) return 1;
       if(ib===-1) return -1;
@@ -760,9 +584,12 @@
         const fim = it.fim_de_jogo ? "🔵 " : "";
         const st = statusLabel(it.status);
         const nome = meta.nome || it.id;
-        const real = it.termino_real ? ` (${it.termino_real})` : "";
+
+        const ini = it.inicio_real ? ` Ini: ${it.inicio_real}` : "";
+        const fin = it.termino_real ? ` Fin: ${it.termino_real}` : "";
         const nota = it.nota ? ` - ${it.nota}` : "";
-        lines.push(`${fim}${st} - ${nome}${real}${nota}`);
+
+        lines.push(`${fim}${st} - ${nome}${ini}${fin}${nota}`);
       });
       lines.push("");
     });
@@ -830,9 +657,7 @@
           <div style="width:60px;font-weight:900;">${dd}/${mm}</div>
           <div style="flex:1;background:#21262d;border-radius:999px;height:14px;position:relative;border:1px solid #30363d;">
             <div style="height:100%;width:${pct}%;border-radius:999px;background:#f85149;"></div>
-            <div style="position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:10px;color:#e6edf3;font-weight:900;">
-              ${val}
-            </div>
+            <div style="position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:10px;color:#e6edf3;font-weight:900;">${val}</div>
           </div>
         </div>
       `;
@@ -847,7 +672,6 @@
     document.getElementById("viewIndicadores").style.display = tab === "indicadores" ? "block" : "none";
     document.getElementById("viewInstrucoes").style.display = tab === "instrucoes" ? "block" : "none";
 
-    // filtros fazem sentido para quadro/status/resumo
     const showFilters = (tab === "quadro" || tab === "status" || tab === "resumo");
     document.getElementById("filters").style.display = showFilters ? "flex" : "none";
   }
@@ -859,14 +683,11 @@
     return res.json();
   }
 
-  function setSync(text){
-    document.getElementById("syncPill").textContent = "Sync: " + text;
-  }
+  function setSync(text){ document.getElementById("syncPill").textContent = "Sync: " + text; }
 
   function setActiveChip(filter, value){
     document.querySelectorAll(`.chip[data-filter="${filter}"]`).forEach(ch=>{
-      const v = ch.getAttribute("data-value");
-      ch.classList.toggle("active", v === value);
+      ch.classList.toggle("active", ch.getAttribute("data-value") === value);
     });
   }
 
@@ -887,8 +708,7 @@
     }catch(e){
       setSync("falhou (verifique malhas.json)");
       console.error(e);
-      // limpa views
-      document.getElementById("tbodyQuadro").innerHTML = `<tr><td colspan="10" class="muted">Falha ao carregar malhas.json.</td></tr>`;
+      document.getElementById("tbodyQuadro").innerHTML = `<tr><td colspan="11" class="muted">Falha ao carregar malhas.json.</td></tr>`;
       document.getElementById("quickGrid").innerHTML = `<div class="muted">Falha ao carregar malhas.json.</div>`;
       document.getElementById("barsMes").textContent = "Falha ao carregar malhas.json.";
     }
@@ -899,7 +719,6 @@
     buildDaySelect();
     setPills();
 
-    // selects
     document.getElementById("monthSelect").addEventListener("change", (e)=>{
       state.month = e.target.value;
       buildDaySelect();
@@ -912,7 +731,6 @@
       refresh();
     });
 
-    // tabs
     document.querySelectorAll(".tab").forEach(btn=>{
       btn.addEventListener("click", ()=>{
         document.querySelectorAll(".tab").forEach(b=>b.classList.remove("active"));
@@ -925,7 +743,6 @@
       });
     });
 
-    // chips
     document.querySelectorAll(".chip").forEach(ch=>{
       ch.addEventListener("click", ()=>{
         const filter = ch.getAttribute("data-filter");
@@ -942,13 +759,13 @@
       });
     });
 
-    // busca
     const search = document.getElementById("searchInput");
     search.addEventListener("input", ()=>{
       state.busca = search.value;
       renderQuadro();
       renderStatusCards();
     });
+
     document.getElementById("btnClear").addEventListener("click", ()=>{
       state.busca = "";
       search.value = "";
@@ -960,7 +777,6 @@
       renderStatusCards();
     });
 
-    // resumo
     document.getElementById("btnGerarResumo").addEventListener("click", gerarResumo);
 
     showTab("quadro");
