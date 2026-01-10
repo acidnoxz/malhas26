@@ -2,631 +2,890 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Painel acompanhamento por Turno - Janeiro 2026</title>
-
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Painel de acompanhamento por Turno - Janeiro 2026</title>
   <style>
     :root{
-      --bg:#0b0f14;
-      --panel:#121824;
-      --panel2:#0f1622;
-      --line:#1f2a3a;
-      --text:#e8eef7;
-      --muted:#9aa7b7;
-      --chip:#0e1520;
-      --chipOn:#e8eef7;
-      --chipOnText:#0b0f14;
-
-      --em:#f4c542;
-      --ok:#25c06d;
-      --cont:#2f7dff;
-      --abend:#ff4d4d;
-      --nc:#a97cff;
-      --agu:#8b98a8;
-      --sem:#5c6777;
+      --bg: #0b0f14;
+      --panel: rgba(18,24,36,.86);
+      --panel2: rgba(12,18,28,.72);
+      --stroke: rgba(31,42,58,.9);
+      --text: #e9eef7;
+      --muted: rgba(233,238,247,.72);
+      --btn: rgba(18,24,36,.65);
+      --btnStroke: rgba(31,42,58,.85);
+      --shadow: 0 18px 60px rgba(0,0,0,.45);
+      --radius: 18px;
     }
 
-    *{box-sizing:border-box}
+    *{ box-sizing:border-box; }
     body{
-      margin:0; padding:18px;
-      background: radial-gradient(1200px 600px at 20% -10%, #18233a 0%, transparent 60%),
-                  radial-gradient(1200px 600px at 90% 0%, #132a20 0%, transparent 55%),
-                  var(--bg);
-      color:var(--text);
+      margin:0;
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: radial-gradient(1200px 600px at 15% 0%, rgba(47,125,255,.18), transparent 55%),
+                  radial-gradient(1200px 600px at 85% 0%, rgba(34,197,94,.14), transparent 55%),
+                  var(--bg);
+      color: var(--text);
+      padding: 18px;
     }
 
-    h1{margin:0 0 6px 0; font-size:32px}
-    .subtitle{color:var(--muted); margin-bottom:14px}
+    h1{ margin:0; font-size:34px; letter-spacing:.2px; }
+    .sub{ margin-top:6px; color: var(--muted); }
 
-    .bar{
-      display:flex; flex-wrap:wrap; gap:10px;
+    .wrap{
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .card{
+      margin-top:14px;
+      background: var(--panel);
+      border: 1px solid var(--stroke);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+
+    .toolbar{
+      padding: 14px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
       align-items:center;
-      background: rgba(18,24,36,.65);
-      border:1px solid rgba(31,42,58,.8);
-      padding:12px;
-      border-radius:14px;
-      backdrop-filter: blur(6px);
+      border-bottom: 1px solid rgba(31,42,58,.6);
+      background: linear-gradient(to bottom, rgba(255,255,255,.02), transparent);
     }
 
     .pill{
-      display:flex; gap:8px; align-items:center;
-      padding:10px 12px;
-      border:1px solid rgba(31,42,58,.9);
-      border-radius:999px;
-      background: rgba(14,21,32,.75);
-      color:var(--text);
-      font-size:13px;
-      white-space:nowrap;
-    }
-    select, input{
-      background: rgba(10,15,22,.9);
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding: 10px 12px;
+      border-radius: 999px;
+      background: var(--btn);
+      border: 1px solid var(--btnStroke);
       color: var(--text);
-      border: 1px solid rgba(31,42,58,.9);
-      border-radius: 10px;
-      padding: 8px 10px;
-      outline: none;
-      font-size: 13px;
     }
-    input{min-width:240px}
+
+    .pill label{ color: var(--muted); font-size:13px; font-weight:700; }
+    select, input{
+      border-radius: 999px;
+      border: 1px solid rgba(31,42,58,.9);
+      background: rgba(10,15,22,.86);
+      color: var(--text);
+      padding: 8px 12px;
+      outline: none;
+    }
 
     .tabs{
-      display:flex; gap:10px; flex-wrap:wrap;
-      margin:14px 0 10px 0;
+      padding: 12px 14px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      border-bottom: 1px solid rgba(31,42,58,.6);
     }
+
     .tab{
-      cursor:pointer;
-      user-select:none;
-      padding:10px 14px;
-      border-radius:999px;
-      border:1px solid rgba(31,42,58,.9);
-      background: rgba(14,21,32,.6);
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(31,42,58,.85);
+      background: rgba(10,15,22,.55);
       color: var(--text);
-      font-weight:600;
-      font-size:13px;
+      cursor:pointer;
+      font-weight:800;
     }
-    .tab.on{
-      background: #2f7dff;
+    .tab.active{
+      background: rgba(47,125,255,.95);
       border-color: transparent;
+      color: #fff;
     }
 
     .legend{
-      margin:10px 0 14px 0;
-      background: rgba(18,24,36,.55);
-      border:1px solid rgba(31,42,58,.8);
-      border-radius:14px;
-      padding:10px 12px;
-      display:flex; flex-wrap:wrap; gap:16px;
+      padding: 10px 14px;
+      display:flex;
+      gap:14px;
       align-items:center;
-      color: var(--muted);
-      font-size:13px;
+      flex-wrap:wrap;
+      border-bottom: 1px solid rgba(31,42,58,.6);
+      background: rgba(255,255,255,.01);
     }
-    .lgItem{display:flex; align-items:center; gap:8px}
+    .legend .item{ display:flex; align-items:center; gap:8px; color: var(--muted); font-weight:700; font-size:13px; }
+
     .dot{
-      width:10px; height:10px; border-radius:999px; display:inline-block;
-      background: var(--sem);
-      box-shadow: 0 0 0 3px rgba(255,255,255,.04);
+      width: 12px; height: 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.22);
+      display:inline-block;
     }
-    .d-em{background:var(--em)}
-    .d-ok{background:var(--ok)}
-    .d-cont{background:var(--cont)}
-    .d-abend{background:var(--abend)}
-    .d-nc{background:var(--nc)}
-    .d-agu{background:var(--agu)}
-    .d-sem{background:var(--sem)}
+
+    .dot.em_execucao{ background: #fbbf24; }
+    .dot.finalizado{ background: #22c55e; }
+    .dot.contingencia{ background: #3b82f6; }
+    .dot.abend{ background: #ef4444; }
+    .dot.nao_comecou{ background: #a855f7; }
+    .dot.aguardando_condicao{ background: #9ca3af; }
+    .dot.sem_exec{ background: rgba(255,255,255,.18); }
+
+    .dotFim{
+      width: 14px; height: 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.18);
+      display:inline-block;
+    }
+    .dotFim.nao_validado{ background: rgba(255,255,255,.18); }
+    .dotFim.validado{ background: #3b82f6; }
+
+    .content{
+      padding: 14px;
+    }
 
     .filters{
-      display:flex; flex-wrap:wrap; gap:10px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
       align-items:center;
-      background: rgba(18,24,36,.55);
-      border:1px solid rgba(31,42,58,.8);
-      border-radius:14px;
-      padding:12px;
-    }
-    .chips{display:flex; gap:8px; flex-wrap:wrap; align-items:center}
-    .chip{
-      cursor:pointer;
-      user-select:none;
-      padding:8px 12px;
-      border-radius:999px;
-      border:1px solid rgba(31,42,58,.9);
-      background: rgba(14,21,32,.65);
-      color: var(--text);
-      font-weight:600;
-      font-size:13px;
-    }
-    .chip.on{
-      background: var(--chipOn);
-      color: var(--chipOnText);
-      border-color: transparent;
-    }
-    .btn{
-      cursor:pointer;
-      user-select:none;
-      padding:9px 12px;
-      border-radius:10px;
-      border:1px solid rgba(31,42,58,.9);
-      background: rgba(14,21,32,.65);
-      color: var(--text);
-      font-weight:700;
-      font-size:13px;
+      margin-bottom: 12px;
     }
 
-    .tableWrap{
-      margin-top:14px;
-      background: rgba(18,24,36,.55);
-      border:1px solid rgba(31,42,58,.8);
-      border-radius:16px;
-      overflow:hidden;
+    .btn{
+      padding: 9px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(31,42,58,.85);
+      background: rgba(10,15,22,.55);
+      color: var(--text);
+      cursor:pointer;
+      font-weight:800;
     }
+    .btn.active{
+      background: rgba(255,255,255,.12);
+    }
+
     table{
-      width:100%;
-      border-collapse:collapse;
-      font-size:13px;
+      width: 100%;
+      border-collapse: collapse;
+      overflow:hidden;
+      border-radius: 14px;
+      border: 1px solid rgba(31,42,58,.75);
+      background: rgba(10,15,22,.45);
     }
+
     thead th{
       text-align:left;
-      color: var(--muted);
-      font-weight:700;
-      padding:12px 12px;
-      background: rgba(15,22,34,.8);
-      border-bottom: 1px solid rgba(31,42,58,.8);
-      white-space:nowrap;
+      padding: 12px;
+      font-size: 13px;
+      color: rgba(233,238,247,.82);
+      border-bottom: 1px solid rgba(31,42,58,.6);
+      background: rgba(255,255,255,.03);
+      white-space: nowrap;
     }
+
     tbody td{
-      padding:10px 12px;
-      border-bottom:1px solid rgba(31,42,58,.45);
-      vertical-align:top;
-    }
-    tbody tr:hover{background: rgba(16,24,38,.55)}
-
-    .statusCell{
-      display:flex; align-items:center; gap:10px;
-      font-weight:700;
-    }
-    .muted{color:var(--muted)}
-    .fimjogo{
-      font-size:16px;
-      line-height:1;
-    }
-    .note{
-      color:#cbd6e6;
+      padding: 12px;
+      border-bottom: 1px solid rgba(31,42,58,.5);
+      color: rgba(233,238,247,.92);
+      vertical-align: middle;
     }
 
-    .foot{
-      margin-top:12px;
+    tbody tr:hover{
+      background: rgba(255,255,255,.03);
+    }
+
+    .muted{ color: var(--muted); }
+    .mono{ font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+
+    .small{
+      font-size: 12px;
+    }
+
+    .right{
+      text-align:right;
+    }
+
+    .hidden{ display:none !important; }
+
+    .footer{
+      padding: 12px 14px;
       color: var(--muted);
-      font-size:12px;
+      font-size: 12px;
+      border-top: 1px solid rgba(31,42,58,.6);
     }
 
-    .hidden{display:none}
+    .kpiGrid{
+      display:grid;
+      grid-template-columns: repeat(5, minmax(160px, 1fr));
+      gap:10px;
+    }
+    @media (max-width: 1000px){
+      .kpiGrid{ grid-template-columns: repeat(2, minmax(160px, 1fr)); }
+    }
+    .kpi{
+      background: rgba(10,15,22,.55);
+      border: 1px solid rgba(31,42,58,.75);
+      border-radius: 14px;
+      padding: 12px;
+    }
+    .kpi .v{ font-size: 22px; font-weight: 900; margin-top: 6px; }
+
+    .noteBox{
+      background: rgba(10,15,22,.55);
+      border: 1px solid rgba(31,42,58,.75);
+      border-radius: 14px;
+      padding: 12px;
+      margin-top: 10px;
+    }
   </style>
 </head>
 
 <body>
-  <h1>Painel de Malhas por Turno - Janeiro 2026</h1>
-  <div class="subtitle">Painel read-only com fonte em <code>malhas.json</code>. Ordenação fixa (padrão RTB), filtros e quadro diário completo.</div>
+  <div class="wrap">
+    <h1>Painel de Malhas por Turno - Janeiro 2026</h1>
+    <div class="sub">Painel read-only com fonte em malhas.json. Tabela no padrão RTB: previsto, iniciado e finalizado, com filtros e resumo para o time.</div>
 
-  <div class="bar">
-    <div class="pill">
-      <strong>Mês:</strong>
-      <select id="selMes"></select>
-    </div>
+    <div class="card">
+      <div class="toolbar">
+        <div class="pill">
+          <label>Mês:</label>
+          <select id="selMes"></select>
+        </div>
+        <div class="pill">
+          <label>Dia:</label>
+          <select id="selDia"></select>
+        </div>
 
-    <div class="pill">
-      <strong>Dia:</strong>
-      <select id="selDia"></select>
-    </div>
+        <div class="pill">
+          <span class="mono" style="font-weight:900">Odate:</span>
+          <span class="mono" id="lblOdate">-</span>
+        </div>
 
-    <div class="pill">
-      <strong>Odate:</strong>
-      <span id="odateLabel" class="muted">-</span>
-    </div>
+        <div class="pill">
+          <span class="mono" style="font-weight:900">Fonte:</span>
+          <span class="mono" id="lblFonte">malhas.json</span>
+        </div>
 
-    <div class="pill">
-      <strong>Fonte:</strong>
-      <span class="muted">malhas.json</span>
-    </div>
+        <div class="pill">
+          <span class="mono" style="font-weight:900">Sync:</span>
+          <span class="mono" id="lblSync">-</span>
+        </div>
+      </div>
 
-    <div class="pill">
-      <strong>Sync:</strong>
-      <span id="syncLabel" class="muted">-</span>
+      <div class="tabs">
+        <button class="tab active" data-tab="quadro">Quadro diário</button>
+        <button class="tab" data-tab="status">Status das malhas</button>
+        <button class="tab" data-tab="resumo">Resumo do dia (para o time)</button>
+        <button class="tab" data-tab="indicadores">Indicadores do mês</button>
+        <button class="tab" data-tab="instrucoes">Instruções</button>
+      </div>
+
+      <div class="legend">
+        <div class="item"><span style="font-weight:900;color:var(--text)">Legenda</span></div>
+        <div class="item"><span class="dot em_execucao"></span> Em execução</div>
+        <div class="item"><span class="dot finalizado"></span> Finalizado</div>
+        <div class="item"><span class="dot contingencia"></span> Contingência</div>
+        <div class="item"><span class="dot abend"></span> Abend</div>
+        <div class="item"><span class="dot nao_comecou"></span> Não começou</div>
+        <div class="item"><span class="dot aguardando_condicao"></span> Aguardando condição</div>
+        <div class="item"><span class="dot sem_exec"></span> Sem execução no Odate</div>
+        <div class="item"><span class="dotFim nao_validado"></span>/<span class="dotFim validado"></span> em “Fim de jogo” = não validado / validado</div>
+      </div>
+
+      <div class="content">
+        <!-- QUADRO -->
+        <div id="tabQuadro">
+          <div class="filters">
+            <span class="muted" style="font-weight:900;">Filtrar por turno:</span>
+            <button class="btn active" data-turno="ALL">Todos</button>
+            <button class="btn" data-turno="T1">T1</button>
+            <button class="btn" data-turno="T2">T2</button>
+            <button class="btn" data-turno="T3">T3</button>
+
+            <span class="muted" style="font-weight:900;margin-left:10px;">Filtrar por categoria:</span>
+            <button class="btn active" data-cat="ALL">Todas</button>
+            <button class="btn" data-cat="Rotativos">Rotativos</button>
+            <button class="btn" data-cat="Parcelados">Parcelados</button>
+            <button class="btn" data-cat="Modelos">Modelos</button>
+            <button class="btn" data-cat="Gestão PJ e Alto Risco">Gestão PJ e Alto Risco</button>
+            <button class="btn" data-cat="Semanal">Semanal</button>
+
+            <span class="muted" style="font-weight:900;margin-left:10px;">Buscar malha:</span>
+            <input id="q" placeholder="Ex.: SUPER CREDITO, CONSIGNADO" />
+            <button class="btn" id="btnLimpar">Limpar</button>
+
+            <button class="btn" id="btnExportar">Exportar atualizações</button>
+            <button class="btn" id="btnResetLocal">Limpar alterações locais</button>
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Categoria</th>
+                <th>Malha</th>
+                <th>Turno final</th>
+                <th>Início previsto</th>
+                <th>Término previsto</th>
+                <th>Frequência</th>
+                <th>Iniciado</th>
+                <th>Finalizado</th>
+                <th>Status</th>
+                <th>Fim de jogo</th>
+                <th>Observação</th>
+              </tr>
+            </thead>
+            <tbody id="tb"></tbody>
+          </table>
+
+          <div class="noteBox small muted">
+            Read-only no GitHub Pages. Clique no status para editar e salvar localmente (no navegador). Use “Exportar atualizações” para gerar um patch JSON do dia.
+          </div>
+        </div>
+
+        <!-- STATUS -->
+        <div id="tabStatus" class="hidden">
+          <div class="kpiGrid" id="kpis"></div>
+        </div>
+
+        <!-- RESUMO -->
+        <div id="tabResumo" class="hidden">
+          <div class="noteBox" id="resumoBox"></div>
+        </div>
+
+        <!-- INDICADORES -->
+        <div id="tabIndicadores" class="hidden">
+          <div class="kpiGrid" id="kpiMes"></div>
+          <div class="noteBox small muted">
+            Estes indicadores contam eventos do mês selecionado, baseados em dias existentes no JSON. Não usa dados locais (localStorage).
+          </div>
+        </div>
+
+        <!-- INSTRUÇÕES -->
+        <div id="tabInstrucoes" class="hidden">
+          <div class="noteBox">
+            <div style="font-weight:900; font-size:16px;">Como operar</div>
+            <div class="muted" style="margin-top:8px; line-height:1.5;">
+              1) Selecione Mês e Dia (Odate).<br>
+              2) Use filtros (Turno / Categoria) e busca para achar a malha.<br>
+              3) Clique no status (bolinha) para editar: Status, Fim de jogo e Observação.<br>
+              4) Isso salva localmente no navegador (não altera o Git).<br>
+              5) Clique em “Exportar atualizações” para baixar um patch JSON do dia e enviar para quem mantém o malhas.json.<br>
+              6) “Limpar alterações locais” remove tudo do navegador.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">
+        Fonte: <span class="mono">./malhas.json</span> (GitHub Pages). Atualize o JSON via automação (Databricks / Control-M) e o painel reflete.
+      </div>
     </div>
   </div>
 
-  <div class="tabs">
-    <div class="tab on" data-tab="quadro">Quadro diário</div>
-    <div class="tab" data-tab="instrucoes">Instruções</div>
-  </div>
-
-  <div id="tabQuadro">
-    <div class="legend">
-      <div class="lgItem"><strong style="color:var(--text)">Legenda</strong></div>
-      <div class="lgItem"><span class="dot d-em"></span> Em execução</div>
-      <div class="lgItem"><span class="dot d-ok"></span> Finalizado</div>
-      <div class="lgItem"><span class="dot d-cont"></span> Contingência</div>
-      <div class="lgItem"><span class="dot d-abend"></span> Abend</div>
-      <div class="lgItem"><span class="dot d-nc"></span> Não começou</div>
-      <div class="lgItem"><span class="dot d-agu"></span> Aguardando condição</div>
-      <div class="lgItem"><span class="dot d-sem"></span> Sem execução no Odate</div>
-      <div class="lgItem">⚪/🔵 em “Fim de jogo” = não validado / validado</div>
-    </div>
-
-    <div class="filters">
-      <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-        <div class="muted" style="font-weight:700;">Filtrar por turno:</div>
-        <div class="chips" id="chipsTurno"></div>
+  <!-- MODAL -->
+  <div id="modal" class="hidden" style="
+    position:fixed; inset:0; background:rgba(0,0,0,.55);
+    display:flex; align-items:center; justify-content:center; padding:14px; z-index:9999;">
+    <div style="
+      width:min(720px, 98vw);
+      background:rgba(18,24,36,.98);
+      border:1px solid rgba(31,42,58,.9);
+      border-radius:16px;
+      padding:14px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:12px;">
+        <div>
+          <div style="font-weight:900; font-size:16px;" id="mTitle">Editar</div>
+          <div class="muted" id="mSub">-</div>
+        </div>
+        <button class="btn" id="mClose">Fechar</button>
       </div>
 
-      <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-        <div class="muted" style="font-weight:700;">Filtrar por categoria:</div>
-        <div class="chips" id="chipsCat"></div>
+      <div style="margin-top:12px; display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+        <div>
+          <div class="muted" style="font-weight:800; margin-bottom:6px;">Status</div>
+          <select id="mStatus" style="width:100%">
+            <option value="em_execucao">Em execução</option>
+            <option value="finalizado">Finalizado</option>
+            <option value="contingencia">Contingência</option>
+            <option value="abend">Abend</option>
+            <option value="nao_comecou">Não começou</option>
+            <option value="aguardando_condicao">Aguardando condição</option>
+            <option value="sem_exec">Sem execução no Odate</option>
+          </select>
+        </div>
+
+        <div>
+          <div class="muted" style="font-weight:800; margin-bottom:6px;">Fim de jogo</div>
+          <select id="mFimDeJogo" style="width:100%">
+            <option value="false">⚪ Não validado</option>
+            <option value="true">🔵 Validado</option>
+          </select>
+        </div>
       </div>
 
-      <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-        <div class="muted" style="font-weight:700;">Buscar malha:</div>
-        <input id="search" placeholder="Ex.: SUPER CREDITO, CONSIGNADO..." />
-        <button class="btn" id="btnLimpar">Limpar</button>
+      <div style="margin-top:12px;">
+        <div class="muted" style="font-weight:800; margin-bottom:6px;">Observação</div>
+        <textarea id="mObs" rows="5" style="
+          width:100%;
+          background: rgba(10,15,22,.9);
+          color: var(--text);
+          border: 1px solid rgba(31,42,58,.9);
+          border-radius: 12px;
+          padding: 10px;
+          resize: vertical;
+          outline:none;"></textarea>
       </div>
-    </div>
 
-    <div class="tableWrap">
-      <table>
-        <thead>
-          <tr>
-            <th>Categoria</th>
-            <th>Malha</th>
-            <th>Turno final</th>
-            <th>Início previsto</th>
-            <th>Término previsto</th>
-            <th>Frequência</th>
-            <th>Último job</th>
-            <th>Término real</th>
-            <th>Status</th>
-            <th>Fim de jogo</th>
-            <th>Observação</th>
-          </tr>
-        </thead>
-        <tbody id="tbody"></tbody>
-      </table>
-    </div>
-
-    <div class="foot">
-      Fonte: <code>./malhas.json</code> (GitHub Pages). Atualize o JSON via automação (Databricks / Control-M) e o painel reflete.
-    </div>
-  </div>
-
-  <div id="tabInstrucoes" class="hidden">
-    <div class="tableWrap" style="padding:14px">
-      <div style="font-weight:800; margin-bottom:8px;">Como preencher</div>
-      <div class="muted" style="line-height:1.6">
-        1) Marque o <strong>status</strong> da malha no JSON do dia.<br>
-        2) Preencha <strong>observacao</strong> quando necessário.<br>
-        3) Marque <strong>fim_de_jogo</strong> (⚪ não validado / 🔵 validado).<br><br>
-
-        Status suportados (valores no JSON):<br>
-        <code>em_execucao</code>, <code>finalizado</code>, <code>contingencia</code>, <code>abend</code>,
-        <code>nao_comecou</code>, <code>aguardando_condicao</code>, <code>sem_exec</code>.
+      <div style="margin-top:12px; display:flex; gap:10px; justify-content:flex-end;">
+        <button class="btn" id="mCancel">Cancelar</button>
+        <button class="btn" id="mSave" style="background:#2f7dff; border-color:transparent;">Salvar</button>
       </div>
     </div>
   </div>
 
   <script>
-    // ===============================
-    // ORDEM FIXA (padrão RTB)
-    // ===============================
-    const ORDEM_CATEGORIAS = [
-      "Rotativos",
-      "Parcelados",
-      "Modelos",
-      "Gestão PJ e Alto Risco",
-      "Semanal"
-    ];
-
+    const ORDEM_CATEGORIAS = ["Rotativos","Parcelados","Modelos","Gestão PJ e Alto Risco","Semanal"];
     const ORDEM_MALHAS = {
       "Rotativos": [
-        "ORIGENS",
-        "ADMISSAO",
-        "TETO V2",
-        "CMA",
-        "GESTAO",
-        "CHEQUE",
-        "CONCESSAO CARTAO",
-        "CONCESSAO CHEQUE",
-        "SUPER CREDITO",
-        "RENOVACAO LIMITES SEMANAL",
-        "OVERLIMIT CLOUD",
-        "ATUALIZACAO OVERLIMIT ONLINE MF",
-        "OVERLIMIT CARTAO"
+        "ORIGENS","ADMISSAO","TETO V2","CMA","GESTAO","CHEQUE","CONCESSAO CARTAO","CONCESSAO CHEQUE",
+        "SUPER CREDITO","RENOVACAO LIMITES SEMANAL","OVERLIMIT CLOUD","ATUALIZACAO OVERLIMIT ONLINE MF","OVERLIMIT CARTAO"
       ],
       "Parcelados": [
-        "CONSIGNADO",
-        "CONSORCIO",
-        "CP INVESTIDOR",
-        "MICROCREDITO",
-        "RX",
-        "TH3 – OY",
-        "IMOBILIARIO"
+        "CONSIGNADO","CONSORCIO","CP INVESTIDOR","MICROCREDITO","RX","TH3 – OY","IMOBILIARIO"
       ],
       "Modelos": [
-        "BULKLOAD PF ROTATIVOS",
-        "CMA PF",
-        "DNA",
-        "FATURAMENTO",
-        "MODELOS PF PARCELADOS",
-        "MODELOS PF ROTATIVOS",
-        "THR",
-        "RENDAS"
+        "BULKLOAD PF ROTATIVOS","CMA PF","DNA","FATURAMENTO","MODELOS PF PARCELADOS","MODELOS PF ROTATIVOS","THR","RENDAS"
       ],
       "Gestão PJ e Alto Risco": [
-        "BULKLOAD PRAT CPF_CNPJ",
-        "PREVENTIVO PF",
-        "LISTA PREV PJ SEMANAL",
-        "REDUCAO SEMANAL",
-        "REDUCAO MENSAL"
+        "BULKLOAD PRAT CPF_CNPJ","PREVENTIVO PF","LISTA PREV PJ SEMANAL","REDUCAO SEMANAL","REDUCAO MENSAL"
       ],
       "Semanal": [
-        "THD SEMANAL",
-        "THJ SEMANAL",
-        "SUPER CREDITO SEMANAL",
-        "OVERLIMIT CHEQUE SEMANAL",
-        "RENOVADOR CHEQUE SEMANAL",
-        "RX SEMANAL",
-        "IMOBILIARIO PREVENTIVO - SEMANAL",
-        "STATUS MQ"
+        "THD SEMANAL","THJ SEMANAL","SUPER CREDITO SEMANAL","OVERLIMIT CHEQUE SEMANAL","RENOVADOR CHEQUE SEMANAL","RX SEMANAL",
+        "IMOBILIARIO PREVENTIVO - SEMANAL","STATUS MQ"
       ]
     };
 
-    // ===============================
-    // UI state
-    // ===============================
-    let RAW = null;
-    let filtroTurno = "Todos";
-    let filtroCat = "Todas";
-    let filtroTexto = "";
+    const LS_KEY = "malhas26_edits_v1";
 
-    const statusMeta = {
-      em_execucao: { label: "Em execução", dot: "d-em" },
-      finalizado: { label: "Finalizado", dot: "d-ok" },
-      contingencia: { label: "Contingência", dot: "d-cont" },
-      abend: { label: "Abend", dot: "d-abend" },
-      nao_comecou: { label: "Não começou", dot: "d-nc" },
-      aguardando_condicao: { label: "Aguardando condição", dot: "d-agu" },
-      sem_exec: { label: "Sem execução no Odate", dot: "d-sem" }
-    };
+    let DATA = null;
+    let filtroTurno = "ALL";
+    let filtroCat = "ALL";
+    let filtroQ = "";
+
+    function loadEdits(){
+      try { return JSON.parse(localStorage.getItem(LS_KEY) || "{}"); }
+      catch { return {}; }
+    }
+    function saveEdits(ed){ localStorage.setItem(LS_KEY, JSON.stringify(ed)); }
+
+    function getDiaSelecionado(){ return document.getElementById("selDia").value; }
+    function getOverlay(dia, id){ const ed = loadEdits(); return ed?.[dia]?.[id] || null; }
+    function setOverlay(dia, id, patch){
+      const ed = loadEdits();
+      ed[dia] = ed[dia] || {};
+      ed[dia][id] = { ...(ed[dia][id] || {}), ...patch, updatedAt: new Date().toISOString() };
+      saveEdits(ed);
+    }
 
     function ymdToBR(ymd){
-      // "2026-01-10" -> "10/01/2026"
       const [y,m,d] = ymd.split("-");
       return `${d}/${m}/${y}`;
     }
 
-    function buildSelects(){
+    function statusMeta(st){
+      const map = {
+        "em_execucao": { label:"Em execução", cls:"em_execucao" },
+        "finalizado": { label:"Finalizado", cls:"finalizado" },
+        "contingencia": { label:"Contingência", cls:"contingencia" },
+        "abend": { label:"Abend", cls:"abend" },
+        "nao_comecou": { label:"Não começou", cls:"nao_comecou" },
+        "aguardando_condicao": { label:"Aguardando condição", cls:"aguardando_condicao" },
+        "sem_exec": { label:"Sem execução no Odate", cls:"sem_exec" }
+      };
+      return map[st] || map["sem_exec"];
+    }
+
+    function setTab(tab){
+      document.querySelectorAll(".tab").forEach(b=>b.classList.remove("active"));
+      document.querySelector(`.tab[data-tab="${tab}"]`).classList.add("active");
+
+      document.getElementById("tabQuadro").classList.toggle("hidden", tab!=="quadro");
+      document.getElementById("tabStatus").classList.toggle("hidden", tab!=="status");
+      document.getElementById("tabResumo").classList.toggle("hidden", tab!=="resumo");
+      document.getElementById("tabIndicadores").classList.toggle("hidden", tab!=="indicadores");
+      document.getElementById("tabInstrucoes").classList.toggle("hidden", tab!=="instrucoes");
+
+      if(tab==="status") renderStatus();
+      if(tab==="resumo") renderResumo();
+      if(tab==="indicadores") renderIndicadoresMes();
+    }
+
+    async function fetchJSON(){
+      const r = await fetch("./malhas.json", { cache: "no-store" });
+      if(!r.ok) throw new Error("Falha ao carregar malhas.json");
+      return await r.json();
+    }
+
+    function montarSeletores(){
       const selMes = document.getElementById("selMes");
       const selDia = document.getElementById("selDia");
 
-      const dias = Object.keys(RAW.dias || {}).sort();
-      const meses = [...new Set(dias.map(d => d.slice(0,7)))]; // YYYY-MM
+      const dias = Object.keys(DATA.dias || {}).sort();
+      const meses = [...new Set(dias.map(d => d.slice(0,7)))];
 
-      selMes.innerHTML = meses.map(m => {
+      selMes.innerHTML = meses.map(m=>{
         const [y,mm] = m.split("-");
-        const nome = (mm==="01") ? `Janeiro ${y}` : `${m}`;
-        return `<option value="${m}">${nome}</option>`;
+        const nome = (mm==="01") ? "Janeiro" : mm;
+        return `<option value="${m}">${nome} ${y}</option>`;
       }).join("");
+
+      selMes.value = meses[meses.length-1] || "2026-01";
 
       function refreshDias(){
         const mes = selMes.value;
         const diasMes = dias.filter(d => d.startsWith(mes));
-        selDia.innerHTML = diasMes.map(d => `<option value="${d}">${d.slice(8,10)}</option>`).join("");
-        if(diasMes.length){
-          selDia.value = diasMes[diasMes.length-1];
-        }
+        selDia.innerHTML = diasMes.map(d=>{
+          return `<option value="${d}">${d.slice(8,10)}</option>`;
+        }).join("");
+        selDia.value = diasMes[diasMes.length-1] || "2026-01-10";
+        refreshLabels();
         render();
+      }
+
+      function refreshLabels(){
+        const dia = selDia.value;
+        document.getElementById("lblOdate").textContent = ymdToBR(dia);
+        document.getElementById("lblSync").textContent = (DATA?.dias?.[dia]?.updatedAt || "-");
       }
 
       selMes.addEventListener("change", refreshDias);
-      selDia.addEventListener("change", render);
+      selDia.addEventListener("change", ()=>{
+        refreshLabels();
+        render();
+      });
 
-      // default: último dia disponível
-      if(meses.length){
-        selMes.value = meses[meses.length-1];
-      }
       refreshDias();
     }
 
-    function chipGroup(el, options, onPick){
-      el.innerHTML = "";
-      options.forEach(opt => {
-        const b = document.createElement("div");
-        b.className = "chip" + (opt.on ? " on" : "");
-        b.textContent = opt.label;
-        b.addEventListener("click", () => onPick(opt.value));
-        el.appendChild(b);
-      });
+    function indexItensDia(dia){
+      const itens = (DATA?.dias?.[dia]?.itens) || [];
+      const idx = {};
+      itens.forEach(it => idx[it.id] = it);
+      return idx;
     }
 
-    function buildChips(){
-      const chipsTurno = document.getElementById("chipsTurno");
-      const chipsCat = document.getElementById("chipsCat");
+    function getRowsDia(dia){
+      const idxDia = indexItensDia(dia);
 
-      chipGroup(chipsTurno, [
-        {label:"Todos", value:"Todos", on:true},
-        {label:"T1", value:"T1"},
-        {label:"T2", value:"T2"},
-        {label:"T3", value:"T3"},
-      ], (v)=>{filtroTurno=v; updateChips(); render();});
+      const rows = DATA.catalogo_malhas.map(meta=>{
+        const it = idxDia[meta.id] || {
+          id: meta.id,
+          status: "sem_exec",
+          ultimo_job: "",
+          iniciado: "",
+          finalizado: "",
+          termino_real: "",
+          fim_de_jogo: false,
+          observacao: "",
+          nota: ""
+        };
 
-      chipGroup(chipsCat, [
-        {label:"Todas", value:"Todas", on:true},
-        {label:"Rotativos", value:"Rotativos"},
-        {label:"Parcelados", value:"Parcelados"},
-        {label:"Modelos", value:"Modelos"},
-        {label:"Gestão PJ e Alto Risco", value:"Gestão PJ e Alto Risco"},
-        {label:"Semanal", value:"Semanal"},
-      ], (v)=>{filtroCat=v; updateChips(); render();});
+        const ov = getOverlay(dia, meta.id);
+        if(ov){
+          it.status = ov.status ?? it.status;
+          it.fim_de_jogo = (ov.fim_de_jogo ?? it.fim_de_jogo);
+          it.observacao = (ov.observacao ?? it.observacao);
+        }
 
-      function updateChips(){
-        [...chipsTurno.children].forEach(c=>{
-          c.classList.toggle("on", c.textContent === (filtroTurno==="Todos" ? "Todos" : filtroTurno));
-        });
-        [...chipsCat.children].forEach(c=>{
-          c.classList.toggle("on", c.textContent === (filtroCat==="Todas" ? "Todas" : filtroCat));
-        });
-      }
-      updateChips();
-    }
-
-    function bindSearch(){
-      const search = document.getElementById("search");
-      const btnLimpar = document.getElementById("btnLimpar");
-
-      search.addEventListener("input", ()=>{
-        filtroTexto = (search.value || "").trim().toUpperCase();
-        render();
+        return {
+          id: meta.id,
+          categoria: meta.categoria,
+          nome: meta.nome,
+          turno_final: meta.turno_final || "-",
+          inicio_previsto: meta.inicio_previsto || "-",
+          termino_previsto: meta.termino_previsto || "-",
+          frequencia: meta.frequencia || "-",
+          iniciado: it.iniciado || "",
+          finalizado: it.finalizado || it.termino_real || "",
+          status: it.status || "sem_exec",
+          fim_de_jogo: !!it.fim_de_jogo,
+          observacao: (it.observacao || it.nota || "").trim()
+        };
       });
 
-      btnLimpar.addEventListener("click", ()=>{
-        search.value = "";
-        filtroTexto = "";
-        render();
+      // ordenação forçada por categoria + ordem de malha
+      rows.sort((a,b)=>{
+        const ca = ORDEM_CATEGORIAS.indexOf(a.categoria);
+        const cb = ORDEM_CATEGORIAS.indexOf(b.categoria);
+        if(ca !== cb) return (ca<0?999:ca) - (cb<0?999:cb);
+
+        const arr = ORDEM_MALHAS[a.categoria] || [];
+        const ia = arr.indexOf(a.nome);
+        const ib = arr.indexOf(b.nome);
+        if(ia !== ib) return (ia<0?999:ia) - (ib<0?999:ib);
+
+        return a.nome.localeCompare(b.nome);
       });
-    }
 
-    function bindTabs(){
-      const tabs = document.querySelectorAll(".tab");
-      const tabQuadro = document.getElementById("tabQuadro");
-      const tabInst = document.getElementById("tabInstrucoes");
-
-      tabs.forEach(t=>{
-        t.addEventListener("click", ()=>{
-          tabs.forEach(x=>x.classList.remove("on"));
-          t.classList.add("on");
-
-          const key = t.getAttribute("data-tab");
-          tabQuadro.classList.toggle("hidden", key!=="quadro");
-          tabInst.classList.toggle("hidden", key!=="instrucoes");
-        });
-      });
+      return rows;
     }
 
     function render(){
-      if(!RAW) return;
+      const dia = getDiaSelecionado();
+      const tb = document.getElementById("tb");
+      const rows = getRowsDia(dia);
 
-      const selDia = document.getElementById("selDia");
-      const dia = selDia.value;
+      const q = (filtroQ || "").toUpperCase().trim();
 
-      const diaObj = RAW.dias?.[dia] || { updatedAt:null, itens:[] };
-      document.getElementById("odateLabel").textContent = ymdToBR(dia);
-      document.getElementById("syncLabel").textContent = diaObj.updatedAt || "-";
-
-      // mapa de itens do dia por id
-      const mapDia = {};
-      (diaObj.itens || []).forEach(it => mapDia[it.id] = it);
-
-      // mapa do catálogo por nome e por id
-      const catPorNome = {};
-      const catPorId = {};
-      (RAW.catalogo_malhas || []).forEach(m => {
-        catPorNome[m.nome] = m;
-        catPorId[m.id] = m;
+      const filtered = rows.filter(r=>{
+        if(filtroTurno !== "ALL" && r.turno_final !== filtroTurno) return false;
+        if(filtroCat !== "ALL" && r.categoria !== filtroCat) return false;
+        if(q && !r.nome.includes(q)) return false;
+        return true;
       });
 
-      // monta linhas em ordem fixa e sempre completa
-      const rows = [];
-      ORDEM_CATEGORIAS.forEach(cat => {
-        ORDEM_MALHAS[cat].forEach(nome => {
-          const meta = catPorNome[nome] || null;
+      tb.innerHTML = filtered.map(r=>{
+        const s = statusMeta(r.status);
+        const fimCls = r.fim_de_jogo ? "validado" : "nao_validado";
+        const obs = r.observacao ? r.observacao : "-";
 
-          // se não existir no catálogo, ainda mostra (não quebra)
-          const id = meta?.id || null;
+        return `
+          <tr>
+            <td class="muted">${r.categoria}</td>
+            <td><strong>${r.nome}</strong></td>
+            <td>${r.turno_final}</td>
+            <td class="mono">${r.inicio_previsto}</td>
+            <td class="mono">${r.termino_previsto}</td>
+            <td>${r.frequencia}</td>
+            <td class="mono">${r.iniciado || "-"}</td>
+            <td class="mono">${r.finalizado || "-"}</td>
+            <td>
+              <button class="btn" data-edit="1" data-id="${r.id}" style="display:flex; align-items:center; gap:10px;">
+                <span class="dot ${s.cls}"></span>
+                <span style="font-weight:800">${s.label}</span>
+              </button>
+            </td>
+            <td><span class="dotFim ${fimCls}"></span></td>
+            <td class="muted">${escapeHtml(obs)}</td>
+          </tr>
+        `;
+      }).join("");
 
-          // item do dia ou fallback sem_exec
-          const it = (id && mapDia[id]) ? mapDia[id] : {
-            status: "sem_exec",
-            ultimo_job: "-",
-            termino_real: "-",
-            fim_de_jogo: false,
-            observacao: ""
-          };
+      if(filtered.length === 0){
+        tb.innerHTML = `<tr><td colspan="11" class="muted">Sem linhas para os filtros selecionados.</td></tr>`;
+      }
+    }
 
-          // filtros
-          const turno = meta?.turno_final || "-";
-          if(filtroTurno !== "Todos" && turno !== filtroTurno) return;
-          if(filtroCat !== "Todas" && cat !== filtroCat) return;
-          if(filtroTexto){
-            const hay = `${cat} ${nome} ${turno}`.toUpperCase();
-            if(!hay.includes(filtroTexto)) return;
-          }
+    function escapeHtml(s){
+      return String(s).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
+    }
 
-          rows.push({
-            categoria: cat,
-            nome,
-            turno_final: turno,
-            inicio_previsto: meta?.inicio_previsto || "-",
-            termino_previsto: meta?.termino_previsto || "-",
-            frequencia: meta?.frequencia || "-",
-            ultimo_job: it.ultimo_job ?? "-",
-            termino_real: it.termino_real ?? "-",
-            status: it.status || "sem_exec",
-            fim_de_jogo: !!it.fim_de_jogo,
-            observacao: it.observacao || ""
-          });
+    function renderStatus(){
+      const dia = getDiaSelecionado();
+      const rows = getRowsDia(dia);
+
+      const counts = {
+        em_execucao:0, finalizado:0, contingencia:0, abend:0, nao_comecou:0, aguardando_condicao:0, sem_exec:0
+      };
+      rows.forEach(r => { counts[r.status] = (counts[r.status]||0) + 1; });
+
+      const kpis = document.getElementById("kpis");
+      kpis.innerHTML = `
+        <div class="kpi"><div class="muted">Em execução</div><div class="v">${counts.em_execucao}</div></div>
+        <div class="kpi"><div class="muted">Finalizado</div><div class="v">${counts.finalizado}</div></div>
+        <div class="kpi"><div class="muted">Contingência</div><div class="v">${counts.contingencia}</div></div>
+        <div class="kpi"><div class="muted">Abend</div><div class="v">${counts.abend}</div></div>
+        <div class="kpi"><div class="muted">Sem execução</div><div class="v">${counts.sem_exec}</div></div>
+      `;
+    }
+
+    function renderResumo(){
+      const dia = getDiaSelecionado();
+      const rows = getRowsDia(dia);
+
+      const abend = rows.filter(r=>r.status==="abend").map(r=>r.nome);
+      const cont = rows.filter(r=>r.status==="contingencia").map(r=>r.nome);
+      const exec = rows.filter(r=>r.status==="em_execucao").map(r=>r.nome);
+      const sem = rows.filter(r=>r.status==="sem_exec").map(r=>r.nome);
+
+      const box = document.getElementById("resumoBox");
+      box.innerHTML = `
+        <div style="font-weight:900; font-size:16px;">Resumo do dia ${ymdToBR(dia)}</div>
+        <div class="muted" style="margin-top:8px; line-height:1.6;">
+          <div><strong>Abend:</strong> ${abend.length ? abend.join(", ") : "Nenhum"}</div>
+          <div><strong>Contingência:</strong> ${cont.length ? cont.join(", ") : "Nenhum"}</div>
+          <div><strong>Em execução:</strong> ${exec.length ? exec.join(", ") : "Nenhum"}</div>
+          <div><strong>Sem execução no Odate:</strong> ${sem.length ? sem.length + " malhas" : "Nenhum"}</div>
+        </div>
+        <div class="muted small" style="margin-top:10px;">
+          Observações do time ficam no navegador. Use Exportar atualizações para consolidar.
+        </div>
+      `;
+    }
+
+    function renderIndicadoresMes(){
+      const mes = document.getElementById("selMes").value;
+      const dias = Object.keys(DATA.dias || {}).filter(d => d.startsWith(mes)).sort();
+
+      let totalAbend = 0;
+      let totalCont = 0;
+
+      dias.forEach(d=>{
+        const idx = indexItensDia(d);
+        Object.values(idx).forEach(it=>{
+          if(it.status === "abend") totalAbend++;
+          if(it.status === "contingencia") totalCont++;
         });
       });
 
-      // render tabela
-      const tbody = document.getElementById("tbody");
-      tbody.innerHTML = "";
+      const el = document.getElementById("kpiMes");
+      el.innerHTML = `
+        <div class="kpi"><div class="muted">Dias no mês (no JSON)</div><div class="v">${dias.length}</div></div>
+        <div class="kpi"><div class="muted">Total Abend (mês)</div><div class="v">${totalAbend}</div></div>
+        <div class="kpi"><div class="muted">Total Contingência (mês)</div><div class="v">${totalCont}</div></div>
+        <div class="kpi"><div class="muted">Fonte</div><div class="v" style="font-size:14px; font-weight:900;">malhas.json</div></div>
+        <div class="kpi"><div class="muted">Timezone</div><div class="v" style="font-size:14px; font-weight:900;">${DATA.timezone}</div></div>
+      `;
+    }
 
-      if(!rows.length){
-        const tr = document.createElement("tr");
-        tr.innerHTML = `<td colspan="11" class="muted">Sem dados para o filtro atual.</td>`;
-        tbody.appendChild(tr);
-        return;
-      }
+    // MODAL
+    let modalState = { dia:null, id:null, nome:null };
 
-      rows.forEach(r=>{
-        const s = statusMeta[r.status] || statusMeta.sem_exec;
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${r.categoria}</td>
-          <td><strong>${r.nome}</strong></td>
-          <td>${r.turno_final}</td>
-          <td>${r.inicio_previsto}</td>
-          <td>${r.termino_previsto}</td>
-          <td>${r.frequencia}</td>
-          <td>${r.ultimo_job}</td>
-          <td>${r.termino_real}</td>
-          <td>
-            <div class="statusCell">
-              <span class="dot ${s.dot}"></span>
-              <span>${s.label}</span>
-            </div>
-          </td>
-          <td class="fimjogo">${r.fim_de_jogo ? "🔵" : "⚪"}</td>
-          <td class="note">${r.observacao ? r.observacao : "<span class='muted'>-</span>"}</td>
-        `;
-        tbody.appendChild(tr);
+    function openModal(dia, id, nome, current){
+      modalState = { dia, id, nome };
+      document.getElementById("mTitle").textContent = `Editar: ${nome}`;
+      document.getElementById("mSub").textContent = `Odate: ${ymdToBR(dia)} | ID: ${id}`;
+      document.getElementById("mStatus").value = current.status || "sem_exec";
+      document.getElementById("mFimDeJogo").value = String(!!current.fim_de_jogo);
+      document.getElementById("mObs").value = current.observacao || "";
+      document.getElementById("modal").classList.remove("hidden");
+    }
+
+    function closeModal(){
+      document.getElementById("modal").classList.add("hidden");
+    }
+
+    function bindModal(){
+      document.getElementById("mClose").addEventListener("click", closeModal);
+      document.getElementById("mCancel").addEventListener("click", closeModal);
+
+      document.getElementById("mSave").addEventListener("click", ()=>{
+        const dia = modalState.dia;
+        const id = modalState.id;
+        if(!dia || !id) return;
+
+        const status = document.getElementById("mStatus").value;
+        const fim_de_jogo = document.getElementById("mFimDeJogo").value === "true";
+        const observacao = document.getElementById("mObs").value || "";
+
+        setOverlay(dia, id, { status, fim_de_jogo, observacao });
+        closeModal();
+        render();
+      });
+    }
+
+    function bindRowClicks(){
+      document.addEventListener("click", (e)=>{
+        const btn = e.target.closest("button[data-edit='1']");
+        if(!btn) return;
+
+        const id = btn.getAttribute("data-id");
+        const dia = getDiaSelecionado();
+        const tr = btn.closest("tr");
+        const nome = tr?.querySelector("td:nth-child(2) strong")?.textContent || id;
+
+        const ov = getOverlay(dia, id) || {};
+        const current = {
+          status: ov.status || "sem_exec",
+          fim_de_jogo: ov.fim_de_jogo ?? false,
+          observacao: ov.observacao || ""
+        };
+
+        openModal(dia, id, nome, current);
+      });
+    }
+
+    function bindExportButtons(){
+      document.getElementById("btnExportar").addEventListener("click", ()=>{
+        const dia = getDiaSelecionado();
+        const ed = loadEdits();
+        const payload = {
+          version: "patch-1.0",
+          dia,
+          updatedAt: new Date().toISOString(),
+          itens: ed?.[dia] || {}
+        };
+
+        const blob = new Blob([JSON.stringify(payload, null, 2)], { type:"application/json" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = `patch_${dia}.json`;
+        a.click();
+        URL.revokeObjectURL(a.href);
+      });
+
+      document.getElementById("btnResetLocal").addEventListener("click", ()=>{
+        localStorage.removeItem(LS_KEY);
+        render();
+      });
+    }
+
+    function bindFilters(){
+      document.querySelectorAll("button[data-turno]").forEach(b=>{
+        b.addEventListener("click", ()=>{
+          document.querySelectorAll("button[data-turno]").forEach(x=>x.classList.remove("active"));
+          b.classList.add("active");
+          filtroTurno = b.getAttribute("data-turno");
+          render();
+        });
+      });
+
+      document.querySelectorAll("button[data-cat]").forEach(b=>{
+        b.addEventListener("click", ()=>{
+          document.querySelectorAll("button[data-cat]").forEach(x=>x.classList.remove("active"));
+          b.classList.add("active");
+          filtroCat = b.getAttribute("data-cat");
+          render();
+        });
+      });
+
+      document.getElementById("q").addEventListener("input", (e)=>{
+        filtroQ = e.target.value || "";
+        render();
+      });
+
+      document.getElementById("btnLimpar").addEventListener("click", ()=>{
+        filtroTurno = "ALL";
+        filtroCat = "ALL";
+        filtroQ = "";
+        document.getElementById("q").value = "";
+
+        document.querySelectorAll("button[data-turno]").forEach(x=>x.classList.remove("active"));
+        document.querySelector('button[data-turno="ALL"]').classList.add("active");
+
+        document.querySelectorAll("button[data-cat]").forEach(x=>x.classList.remove("active"));
+        document.querySelector('button[data-cat="ALL"]').classList.add("active");
+
+        render();
+      });
+
+      document.querySelectorAll(".tab").forEach(t=>{
+        t.addEventListener("click", ()=> setTab(t.getAttribute("data-tab")));
       });
     }
 
     async function boot(){
-      bindTabs();
-      buildChips();
-      bindSearch();
-
-      const res = await fetch("./malhas.json", { cache: "no-store" });
-      RAW = await res.json();
-
-      buildSelects();
-      render();
+      try{
+        DATA = await fetchJSON();
+        montarSeletores();
+        bindFilters();
+        bindModal();
+        bindRowClicks();
+        bindExportButtons();
+        setTab("quadro");
+        render();
+      }catch(err){
+        document.body.innerHTML = `<pre style="color:#fff; padding:20px;">Erro: ${err.message}</pre>`;
+      }
     }
 
-    boot().catch(err => {
-      console.error(err);
-      const tbody = document.getElementById("tbody");
-      tbody.innerHTML = `<tr><td colspan="11" class="muted">Erro ao carregar malhas.json. Verifique se o arquivo está no repositório e é JSON válido.</td></tr>`;
-    });
+    boot();
   </script>
 </body>
 </html>
