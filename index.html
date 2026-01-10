@@ -2,224 +2,631 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <title>malhas26</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Painel de Malhas por Turno - Janeiro 2026</title>
 
   <style>
-    body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: #0e1116;
-      color: #e6e6e6;
-      margin: 0;
-      padding: 20px;
+    :root{
+      --bg:#0b0f14;
+      --panel:#121824;
+      --panel2:#0f1622;
+      --line:#1f2a3a;
+      --text:#e8eef7;
+      --muted:#9aa7b7;
+      --chip:#0e1520;
+      --chipOn:#e8eef7;
+      --chipOnText:#0b0f14;
+
+      --em:#f4c542;
+      --ok:#25c06d;
+      --cont:#2f7dff;
+      --abend:#ff4d4d;
+      --nc:#a97cff;
+      --agu:#8b98a8;
+      --sem:#5c6777;
     }
 
-    h1 {
-      margin-bottom: 4px;
+    *{box-sizing:border-box}
+    body{
+      margin:0; padding:18px;
+      background: radial-gradient(1200px 600px at 20% -10%, #18233a 0%, transparent 60%),
+                  radial-gradient(1200px 600px at 90% 0%, #132a20 0%, transparent 55%),
+                  var(--bg);
+      color:var(--text);
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
     }
 
-    .subtitle {
-      color: #9aa4b2;
-      margin-bottom: 16px;
+    h1{margin:0 0 6px 0; font-size:32px}
+    .subtitle{color:var(--muted); margin-bottom:14px}
+
+    .bar{
+      display:flex; flex-wrap:wrap; gap:10px;
+      align-items:center;
+      background: rgba(18,24,36,.65);
+      border:1px solid rgba(31,42,58,.8);
+      padding:12px;
+      border-radius:14px;
+      backdrop-filter: blur(6px);
     }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 16px;
-      background: #141922;
-      border-radius: 8px;
-      overflow: hidden;
+    .pill{
+      display:flex; gap:8px; align-items:center;
+      padding:10px 12px;
+      border:1px solid rgba(31,42,58,.9);
+      border-radius:999px;
+      background: rgba(14,21,32,.75);
+      color:var(--text);
+      font-size:13px;
+      white-space:nowrap;
     }
-
-    th, td {
-      padding: 10px;
-      border-bottom: 1px solid #1f2633;
-      font-size: 14px;
-      text-align: left;
-    }
-
-    th {
-      background: #1b2230;
-      font-weight: 600;
-    }
-
-    tr.category {
-      background: #0f1520;
-      font-weight: bold;
-      color: #7aa2ff;
-    }
-
-    .status {
-      font-weight: bold;
-    }
-
-    .em_execucao { color: #f7c843; }
-    .finalizado { color: #3ecf8e; }
-    .contingencia { color: #4c82ff; }
-    .abend { color: #ff5c5c; }
-    .nao_comecou { color: #b48cff; }
-    .aguardando_condicao { color: #9aa4b2; }
-    .sem_exec { color: #6b7280; }
-
-    .fim-jogo {
-      font-size: 18px;
-    }
-
-    .obs {
-      color: #cbd5f5;
+    select, input{
+      background: rgba(10,15,22,.9);
+      color: var(--text);
+      border: 1px solid rgba(31,42,58,.9);
+      border-radius: 10px;
+      padding: 8px 10px;
+      outline: none;
       font-size: 13px;
     }
+    input{min-width:240px}
 
-    footer {
-      margin-top: 24px;
-      color: #7b8190;
-      font-size: 12px;
+    .tabs{
+      display:flex; gap:10px; flex-wrap:wrap;
+      margin:14px 0 10px 0;
     }
+    .tab{
+      cursor:pointer;
+      user-select:none;
+      padding:10px 14px;
+      border-radius:999px;
+      border:1px solid rgba(31,42,58,.9);
+      background: rgba(14,21,32,.6);
+      color: var(--text);
+      font-weight:600;
+      font-size:13px;
+    }
+    .tab.on{
+      background: #2f7dff;
+      border-color: transparent;
+    }
+
+    .legend{
+      margin:10px 0 14px 0;
+      background: rgba(18,24,36,.55);
+      border:1px solid rgba(31,42,58,.8);
+      border-radius:14px;
+      padding:10px 12px;
+      display:flex; flex-wrap:wrap; gap:16px;
+      align-items:center;
+      color: var(--muted);
+      font-size:13px;
+    }
+    .lgItem{display:flex; align-items:center; gap:8px}
+    .dot{
+      width:10px; height:10px; border-radius:999px; display:inline-block;
+      background: var(--sem);
+      box-shadow: 0 0 0 3px rgba(255,255,255,.04);
+    }
+    .d-em{background:var(--em)}
+    .d-ok{background:var(--ok)}
+    .d-cont{background:var(--cont)}
+    .d-abend{background:var(--abend)}
+    .d-nc{background:var(--nc)}
+    .d-agu{background:var(--agu)}
+    .d-sem{background:var(--sem)}
+
+    .filters{
+      display:flex; flex-wrap:wrap; gap:10px;
+      align-items:center;
+      background: rgba(18,24,36,.55);
+      border:1px solid rgba(31,42,58,.8);
+      border-radius:14px;
+      padding:12px;
+    }
+    .chips{display:flex; gap:8px; flex-wrap:wrap; align-items:center}
+    .chip{
+      cursor:pointer;
+      user-select:none;
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid rgba(31,42,58,.9);
+      background: rgba(14,21,32,.65);
+      color: var(--text);
+      font-weight:600;
+      font-size:13px;
+    }
+    .chip.on{
+      background: var(--chipOn);
+      color: var(--chipOnText);
+      border-color: transparent;
+    }
+    .btn{
+      cursor:pointer;
+      user-select:none;
+      padding:9px 12px;
+      border-radius:10px;
+      border:1px solid rgba(31,42,58,.9);
+      background: rgba(14,21,32,.65);
+      color: var(--text);
+      font-weight:700;
+      font-size:13px;
+    }
+
+    .tableWrap{
+      margin-top:14px;
+      background: rgba(18,24,36,.55);
+      border:1px solid rgba(31,42,58,.8);
+      border-radius:16px;
+      overflow:hidden;
+    }
+    table{
+      width:100%;
+      border-collapse:collapse;
+      font-size:13px;
+    }
+    thead th{
+      text-align:left;
+      color: var(--muted);
+      font-weight:700;
+      padding:12px 12px;
+      background: rgba(15,22,34,.8);
+      border-bottom: 1px solid rgba(31,42,58,.8);
+      white-space:nowrap;
+    }
+    tbody td{
+      padding:10px 12px;
+      border-bottom:1px solid rgba(31,42,58,.45);
+      vertical-align:top;
+    }
+    tbody tr:hover{background: rgba(16,24,38,.55)}
+
+    .statusCell{
+      display:flex; align-items:center; gap:10px;
+      font-weight:700;
+    }
+    .muted{color:var(--muted)}
+    .fimjogo{
+      font-size:16px;
+      line-height:1;
+    }
+    .note{
+      color:#cbd6e6;
+    }
+
+    .foot{
+      margin-top:12px;
+      color: var(--muted);
+      font-size:12px;
+    }
+
+    .hidden{display:none}
   </style>
 </head>
 
 <body>
+  <h1>Painel de Malhas por Turno - Janeiro 2026</h1>
+  <div class="subtitle">Painel read-only com fonte em <code>malhas.json</code>. Ordenação fixa (padrão RTB), filtros e quadro diário completo.</div>
 
-<h1>malhas26</h1>
-<div class="subtitle">
-  Painel read-only. Fonte: <code>malhas.json</code>
-</div>
+  <div class="bar">
+    <div class="pill">
+      <strong>Mês:</strong>
+      <select id="selMes"></select>
+    </div>
 
-<table>
-  <thead>
-    <tr>
-      <th>Categoria</th>
-      <th>Malha</th>
-      <th>Status</th>
-      <th>Último job</th>
-      <th>Término real</th>
-      <th>Fim de jogo</th>
-      <th>Observação</th>
-    </tr>
-  </thead>
-  <tbody id="tabela-malhas"></tbody>
-</table>
+    <div class="pill">
+      <strong>Dia:</strong>
+      <select id="selDia"></select>
+    </div>
 
-<footer>
-  ⚪ = não validado | 🔵 = validado • Sem execução no Odate = sem_exec
-</footer>
+    <div class="pill">
+      <strong>Odate:</strong>
+      <span id="odateLabel" class="muted">-</span>
+    </div>
 
-<script>
-/* ===============================
-   ORDEM FIXA
-================================ */
+    <div class="pill">
+      <strong>Fonte:</strong>
+      <span class="muted">malhas.json</span>
+    </div>
 
-const ORDEM_CATEGORIAS = [
-  "Rotativos",
-  "Parcelados",
-  "Modelos",
-  "Gestão PJ e Alto Risco",
-  "Semanal"
-];
+    <div class="pill">
+      <strong>Sync:</strong>
+      <span id="syncLabel" class="muted">-</span>
+    </div>
+  </div>
 
-const ORDEM_MALHAS = {
-  "Rotativos": [
-    "ORIGENS",
-    "ADMISSAO",
-    "TETO V2",
-    "CMA",
-    "GESTAO",
-    "CHEQUE",
-    "CONCESSAO CARTAO",
-    "CONCESSAO CHEQUE",
-    "SUPER CREDITO",
-    "RENOVACAO LIMITES SEMANAL",
-    "OVERLIMIT CLOUD",
-    "ATUALIZACAO OVERLIMIT ONLINE MF",
-    "OVERLIMIT CARTAO"
-  ],
-  "Parcelados": [
-    "CONSIGNADO",
-    "CONSORCIO",
-    "CP INVESTIDOR",
-    "MICROCREDITO",
-    "RX",
-    "TH3 – OY",
-    "IMOBILIARIO"
-  ],
-  "Modelos": [
-    "BULKLOAD PF ROTATIVOS",
-    "CMA PF",
-    "DNA",
-    "FATURAMENTO",
-    "MODELOS PF PARCELADOS",
-    "MODELOS PF ROTATIVOS",
-    "THR",
-    "RENDAS"
-  ],
-  "Gestão PJ e Alto Risco": [
-    "BULKLOAD PRAT CPF_CNPJ",
-    "PREVENTIVO PF",
-    "LISTA PREV PJ SEMANAL",
-    "REDUCAO SEMANAL",
-    "REDUCAO MENSAL"
-  ],
-  "Semanal": [
-    "THD SEMANAL",
-    "THJ SEMANAL",
-    "SUPER CREDITO SEMANAL",
-    "OVERLIMIT CHEQUE SEMANAL",
-    "RENOVADOR CHEQUE SEMANAL",
-    "RX SEMANAL",
-    "IMOBILIARIO PREVENTIVO - SEMANAL",
-    "STATUS MQ"
-  ]
-};
+  <div class="tabs">
+    <div class="tab on" data-tab="quadro">Quadro diário</div>
+    <div class="tab" data-tab="instrucoes">Instruções</div>
+  </div>
 
-/* ===============================
-   LOAD + RENDER
-================================ */
+  <div id="tabQuadro">
+    <div class="legend">
+      <div class="lgItem"><strong style="color:var(--text)">Legenda</strong></div>
+      <div class="lgItem"><span class="dot d-em"></span> Em execução</div>
+      <div class="lgItem"><span class="dot d-ok"></span> Finalizado</div>
+      <div class="lgItem"><span class="dot d-cont"></span> Contingência</div>
+      <div class="lgItem"><span class="dot d-abend"></span> Abend</div>
+      <div class="lgItem"><span class="dot d-nc"></span> Não começou</div>
+      <div class="lgItem"><span class="dot d-agu"></span> Aguardando condição</div>
+      <div class="lgItem"><span class="dot d-sem"></span> Sem execução no Odate</div>
+      <div class="lgItem">⚪/🔵 em “Fim de jogo” = não validado / validado</div>
+    </div>
 
-fetch("./malhas.json")
-  .then(res => res.json())
-  .then(data => renderTabela(data));
+    <div class="filters">
+      <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+        <div class="muted" style="font-weight:700;">Filtrar por turno:</div>
+        <div class="chips" id="chipsTurno"></div>
+      </div>
 
-function renderTabela(data) {
-  const tbody = document.getElementById("tabela-malhas");
-  tbody.innerHTML = "";
+      <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+        <div class="muted" style="font-weight:700;">Filtrar por categoria:</div>
+        <div class="chips" id="chipsCat"></div>
+      </div>
 
-  const dia = Object.keys(data.dias)[0];
-  const itensDia = data.dias[dia]?.itens || [];
+      <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+        <div class="muted" style="font-weight:700;">Buscar malha:</div>
+        <input id="search" placeholder="Ex.: SUPER CREDITO, CONSIGNADO..." />
+        <button class="btn" id="btnLimpar">Limpar</button>
+      </div>
+    </div>
 
-  const mapa = {};
-  itensDia.forEach(i => mapa[i.id] = i);
+    <div class="tableWrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Categoria</th>
+            <th>Malha</th>
+            <th>Turno final</th>
+            <th>Início previsto</th>
+            <th>Término previsto</th>
+            <th>Frequência</th>
+            <th>Último job</th>
+            <th>Término real</th>
+            <th>Status</th>
+            <th>Fim de jogo</th>
+            <th>Observação</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
 
-  ORDEM_CATEGORIAS.forEach(cat => {
-    const trCat = document.createElement("tr");
-    trCat.className = "category";
-    trCat.innerHTML = `<td colspan="7">${cat}</td>`;
-    tbody.appendChild(trCat);
+    <div class="foot">
+      Fonte: <code>./malhas.json</code> (GitHub Pages). Atualize o JSON via automação (Databricks / Control-M) e o painel reflete.
+    </div>
+  </div>
 
-    ORDEM_MALHAS[cat].forEach(nome => {
-      const item = Object.values(mapa).find(m => m.nome === nome) || {
-        status: "sem_exec",
-        ultimo_job: "-",
-        termino_real: "-",
-        fim_de_jogo: false,
-        observacao: ""
-      };
+  <div id="tabInstrucoes" class="hidden">
+    <div class="tableWrap" style="padding:14px">
+      <div style="font-weight:800; margin-bottom:8px;">Como preencher</div>
+      <div class="muted" style="line-height:1.6">
+        1) Marque o <strong>status</strong> da malha no JSON do dia.<br>
+        2) Preencha <strong>observacao</strong> quando necessário.<br>
+        3) Marque <strong>fim_de_jogo</strong> (⚪ não validado / 🔵 validado).<br><br>
 
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${cat}</td>
-        <td>${nome}</td>
-        <td class="status ${item.status}">${item.status}</td>
-        <td>${item.ultimo_job || "-"}</td>
-        <td>${item.termino_real || "-"}</td>
-        <td class="fim-jogo">${item.fim_de_jogo ? "🔵" : "⚪"}</td>
-        <td class="obs">${item.observacao || "-"}</td>
-      `;
-      tbody.appendChild(tr);
+        Status suportados (valores no JSON):<br>
+        <code>em_execucao</code>, <code>finalizado</code>, <code>contingencia</code>, <code>abend</code>,
+        <code>nao_comecou</code>, <code>aguardando_condicao</code>, <code>sem_exec</code>.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ===============================
+    // ORDEM FIXA (padrão RTB)
+    // ===============================
+    const ORDEM_CATEGORIAS = [
+      "Rotativos",
+      "Parcelados",
+      "Modelos",
+      "Gestão PJ e Alto Risco",
+      "Semanal"
+    ];
+
+    const ORDEM_MALHAS = {
+      "Rotativos": [
+        "ORIGENS",
+        "ADMISSAO",
+        "TETO V2",
+        "CMA",
+        "GESTAO",
+        "CHEQUE",
+        "CONCESSAO CARTAO",
+        "CONCESSAO CHEQUE",
+        "SUPER CREDITO",
+        "RENOVACAO LIMITES SEMANAL",
+        "OVERLIMIT CLOUD",
+        "ATUALIZACAO OVERLIMIT ONLINE MF",
+        "OVERLIMIT CARTAO"
+      ],
+      "Parcelados": [
+        "CONSIGNADO",
+        "CONSORCIO",
+        "CP INVESTIDOR",
+        "MICROCREDITO",
+        "RX",
+        "TH3 – OY",
+        "IMOBILIARIO"
+      ],
+      "Modelos": [
+        "BULKLOAD PF ROTATIVOS",
+        "CMA PF",
+        "DNA",
+        "FATURAMENTO",
+        "MODELOS PF PARCELADOS",
+        "MODELOS PF ROTATIVOS",
+        "THR",
+        "RENDAS"
+      ],
+      "Gestão PJ e Alto Risco": [
+        "BULKLOAD PRAT CPF_CNPJ",
+        "PREVENTIVO PF",
+        "LISTA PREV PJ SEMANAL",
+        "REDUCAO SEMANAL",
+        "REDUCAO MENSAL"
+      ],
+      "Semanal": [
+        "THD SEMANAL",
+        "THJ SEMANAL",
+        "SUPER CREDITO SEMANAL",
+        "OVERLIMIT CHEQUE SEMANAL",
+        "RENOVADOR CHEQUE SEMANAL",
+        "RX SEMANAL",
+        "IMOBILIARIO PREVENTIVO - SEMANAL",
+        "STATUS MQ"
+      ]
+    };
+
+    // ===============================
+    // UI state
+    // ===============================
+    let RAW = null;
+    let filtroTurno = "Todos";
+    let filtroCat = "Todas";
+    let filtroTexto = "";
+
+    const statusMeta = {
+      em_execucao: { label: "Em execução", dot: "d-em" },
+      finalizado: { label: "Finalizado", dot: "d-ok" },
+      contingencia: { label: "Contingência", dot: "d-cont" },
+      abend: { label: "Abend", dot: "d-abend" },
+      nao_comecou: { label: "Não começou", dot: "d-nc" },
+      aguardando_condicao: { label: "Aguardando condição", dot: "d-agu" },
+      sem_exec: { label: "Sem execução no Odate", dot: "d-sem" }
+    };
+
+    function ymdToBR(ymd){
+      // "2026-01-10" -> "10/01/2026"
+      const [y,m,d] = ymd.split("-");
+      return `${d}/${m}/${y}`;
+    }
+
+    function buildSelects(){
+      const selMes = document.getElementById("selMes");
+      const selDia = document.getElementById("selDia");
+
+      const dias = Object.keys(RAW.dias || {}).sort();
+      const meses = [...new Set(dias.map(d => d.slice(0,7)))]; // YYYY-MM
+
+      selMes.innerHTML = meses.map(m => {
+        const [y,mm] = m.split("-");
+        const nome = (mm==="01") ? `Janeiro ${y}` : `${m}`;
+        return `<option value="${m}">${nome}</option>`;
+      }).join("");
+
+      function refreshDias(){
+        const mes = selMes.value;
+        const diasMes = dias.filter(d => d.startsWith(mes));
+        selDia.innerHTML = diasMes.map(d => `<option value="${d}">${d.slice(8,10)}</option>`).join("");
+        if(diasMes.length){
+          selDia.value = diasMes[diasMes.length-1];
+        }
+        render();
+      }
+
+      selMes.addEventListener("change", refreshDias);
+      selDia.addEventListener("change", render);
+
+      // default: último dia disponível
+      if(meses.length){
+        selMes.value = meses[meses.length-1];
+      }
+      refreshDias();
+    }
+
+    function chipGroup(el, options, onPick){
+      el.innerHTML = "";
+      options.forEach(opt => {
+        const b = document.createElement("div");
+        b.className = "chip" + (opt.on ? " on" : "");
+        b.textContent = opt.label;
+        b.addEventListener("click", () => onPick(opt.value));
+        el.appendChild(b);
+      });
+    }
+
+    function buildChips(){
+      const chipsTurno = document.getElementById("chipsTurno");
+      const chipsCat = document.getElementById("chipsCat");
+
+      chipGroup(chipsTurno, [
+        {label:"Todos", value:"Todos", on:true},
+        {label:"T1", value:"T1"},
+        {label:"T2", value:"T2"},
+        {label:"T3", value:"T3"},
+      ], (v)=>{filtroTurno=v; updateChips(); render();});
+
+      chipGroup(chipsCat, [
+        {label:"Todas", value:"Todas", on:true},
+        {label:"Rotativos", value:"Rotativos"},
+        {label:"Parcelados", value:"Parcelados"},
+        {label:"Modelos", value:"Modelos"},
+        {label:"Gestão PJ e Alto Risco", value:"Gestão PJ e Alto Risco"},
+        {label:"Semanal", value:"Semanal"},
+      ], (v)=>{filtroCat=v; updateChips(); render();});
+
+      function updateChips(){
+        [...chipsTurno.children].forEach(c=>{
+          c.classList.toggle("on", c.textContent === (filtroTurno==="Todos" ? "Todos" : filtroTurno));
+        });
+        [...chipsCat.children].forEach(c=>{
+          c.classList.toggle("on", c.textContent === (filtroCat==="Todas" ? "Todas" : filtroCat));
+        });
+      }
+      updateChips();
+    }
+
+    function bindSearch(){
+      const search = document.getElementById("search");
+      const btnLimpar = document.getElementById("btnLimpar");
+
+      search.addEventListener("input", ()=>{
+        filtroTexto = (search.value || "").trim().toUpperCase();
+        render();
+      });
+
+      btnLimpar.addEventListener("click", ()=>{
+        search.value = "";
+        filtroTexto = "";
+        render();
+      });
+    }
+
+    function bindTabs(){
+      const tabs = document.querySelectorAll(".tab");
+      const tabQuadro = document.getElementById("tabQuadro");
+      const tabInst = document.getElementById("tabInstrucoes");
+
+      tabs.forEach(t=>{
+        t.addEventListener("click", ()=>{
+          tabs.forEach(x=>x.classList.remove("on"));
+          t.classList.add("on");
+
+          const key = t.getAttribute("data-tab");
+          tabQuadro.classList.toggle("hidden", key!=="quadro");
+          tabInst.classList.toggle("hidden", key!=="instrucoes");
+        });
+      });
+    }
+
+    function render(){
+      if(!RAW) return;
+
+      const selDia = document.getElementById("selDia");
+      const dia = selDia.value;
+
+      const diaObj = RAW.dias?.[dia] || { updatedAt:null, itens:[] };
+      document.getElementById("odateLabel").textContent = ymdToBR(dia);
+      document.getElementById("syncLabel").textContent = diaObj.updatedAt || "-";
+
+      // mapa de itens do dia por id
+      const mapDia = {};
+      (diaObj.itens || []).forEach(it => mapDia[it.id] = it);
+
+      // mapa do catálogo por nome e por id
+      const catPorNome = {};
+      const catPorId = {};
+      (RAW.catalogo_malhas || []).forEach(m => {
+        catPorNome[m.nome] = m;
+        catPorId[m.id] = m;
+      });
+
+      // monta linhas em ordem fixa e sempre completa
+      const rows = [];
+      ORDEM_CATEGORIAS.forEach(cat => {
+        ORDEM_MALHAS[cat].forEach(nome => {
+          const meta = catPorNome[nome] || null;
+
+          // se não existir no catálogo, ainda mostra (não quebra)
+          const id = meta?.id || null;
+
+          // item do dia ou fallback sem_exec
+          const it = (id && mapDia[id]) ? mapDia[id] : {
+            status: "sem_exec",
+            ultimo_job: "-",
+            termino_real: "-",
+            fim_de_jogo: false,
+            observacao: ""
+          };
+
+          // filtros
+          const turno = meta?.turno_final || "-";
+          if(filtroTurno !== "Todos" && turno !== filtroTurno) return;
+          if(filtroCat !== "Todas" && cat !== filtroCat) return;
+          if(filtroTexto){
+            const hay = `${cat} ${nome} ${turno}`.toUpperCase();
+            if(!hay.includes(filtroTexto)) return;
+          }
+
+          rows.push({
+            categoria: cat,
+            nome,
+            turno_final: turno,
+            inicio_previsto: meta?.inicio_previsto || "-",
+            termino_previsto: meta?.termino_previsto || "-",
+            frequencia: meta?.frequencia || "-",
+            ultimo_job: it.ultimo_job ?? "-",
+            termino_real: it.termino_real ?? "-",
+            status: it.status || "sem_exec",
+            fim_de_jogo: !!it.fim_de_jogo,
+            observacao: it.observacao || ""
+          });
+        });
+      });
+
+      // render tabela
+      const tbody = document.getElementById("tbody");
+      tbody.innerHTML = "";
+
+      if(!rows.length){
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td colspan="11" class="muted">Sem dados para o filtro atual.</td>`;
+        tbody.appendChild(tr);
+        return;
+      }
+
+      rows.forEach(r=>{
+        const s = statusMeta[r.status] || statusMeta.sem_exec;
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${r.categoria}</td>
+          <td><strong>${r.nome}</strong></td>
+          <td>${r.turno_final}</td>
+          <td>${r.inicio_previsto}</td>
+          <td>${r.termino_previsto}</td>
+          <td>${r.frequencia}</td>
+          <td>${r.ultimo_job}</td>
+          <td>${r.termino_real}</td>
+          <td>
+            <div class="statusCell">
+              <span class="dot ${s.dot}"></span>
+              <span>${s.label}</span>
+            </div>
+          </td>
+          <td class="fimjogo">${r.fim_de_jogo ? "🔵" : "⚪"}</td>
+          <td class="note">${r.observacao ? r.observacao : "<span class='muted'>-</span>"}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    async function boot(){
+      bindTabs();
+      buildChips();
+      bindSearch();
+
+      const res = await fetch("./malhas.json", { cache: "no-store" });
+      RAW = await res.json();
+
+      buildSelects();
+      render();
+    }
+
+    boot().catch(err => {
+      console.error(err);
+      const tbody = document.getElementById("tbody");
+      tbody.innerHTML = `<tr><td colspan="11" class="muted">Erro ao carregar malhas.json. Verifique se o arquivo está no repositório e é JSON válido.</td></tr>`;
     });
-  });
-}
-</script>
-
+  </script>
 </body>
 </html>
