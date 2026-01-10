@@ -1,3 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>malhas26</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #0e1116;
+      color: #e6e6e6;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      margin-bottom: 4px;
+    }
+
+    .subtitle {
+      color: #9aa4b2;
+      margin-bottom: 16px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 16px;
+      background: #141922;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    th, td {
+      padding: 10px;
+      border-bottom: 1px solid #1f2633;
+      font-size: 14px;
+      text-align: left;
+    }
+
+    th {
+      background: #1b2230;
+      font-weight: 600;
+    }
+
+    tr.category {
+      background: #0f1520;
+      font-weight: bold;
+      color: #7aa2ff;
+    }
+
+    .status {
+      font-weight: bold;
+    }
+
+    .em_execucao { color: #f7c843; }
+    .finalizado { color: #3ecf8e; }
+    .contingencia { color: #4c82ff; }
+    .abend { color: #ff5c5c; }
+    .nao_comecou { color: #b48cff; }
+    .aguardando_condicao { color: #9aa4b2; }
+    .sem_exec { color: #6b7280; }
+
+    .fim-jogo {
+      font-size: 18px;
+    }
+
+    .obs {
+      color: #cbd5f5;
+      font-size: 13px;
+    }
+
+    footer {
+      margin-top: 24px;
+      color: #7b8190;
+      font-size: 12px;
+    }
+  </style>
+</head>
+
+<body>
+
+<h1>malhas26</h1>
+<div class="subtitle">
+  Painel read-only. Fonte: <code>malhas.json</code>
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Categoria</th>
+      <th>Malha</th>
+      <th>Status</th>
+      <th>Último job</th>
+      <th>Término real</th>
+      <th>Fim de jogo</th>
+      <th>Observação</th>
+    </tr>
+  </thead>
+  <tbody id="tabela-malhas"></tbody>
+</table>
+
+<footer>
+  ⚪ = não validado | 🔵 = validado • Sem execução no Odate = sem_exec
+</footer>
+
+<script>
+/* ===============================
+   ORDEM FIXA
+================================ */
+
 const ORDEM_CATEGORIAS = [
   "Rotativos",
   "Parcelados",
@@ -22,7 +134,6 @@ const ORDEM_MALHAS = {
     "ATUALIZACAO OVERLIMIT ONLINE MF",
     "OVERLIMIT CARTAO"
   ],
-
   "Parcelados": [
     "CONSIGNADO",
     "CONSORCIO",
@@ -32,7 +143,6 @@ const ORDEM_MALHAS = {
     "TH3 – OY",
     "IMOBILIARIO"
   ],
-
   "Modelos": [
     "BULKLOAD PF ROTATIVOS",
     "CMA PF",
@@ -43,7 +153,6 @@ const ORDEM_MALHAS = {
     "THR",
     "RENDAS"
   ],
-
   "Gestão PJ e Alto Risco": [
     "BULKLOAD PRAT CPF_CNPJ",
     "PREVENTIVO PF",
@@ -51,7 +160,6 @@ const ORDEM_MALHAS = {
     "REDUCAO SEMANAL",
     "REDUCAO MENSAL"
   ],
-
   "Semanal": [
     "THD SEMANAL",
     "THJ SEMANAL",
@@ -64,794 +172,54 @@ const ORDEM_MALHAS = {
   ]
 };
 
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Painel de Malhas por Turno - 2026</title>
-  <style>
-    *{ box-sizing:border-box; }
-    body{
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      margin:0;
-      padding:18px;
-      background:#0d1117;
-      color:#e6edf3;
-    }
-    h1{ margin:0 0 6px 0; font-size:32px; letter-spacing:-0.3px; }
-    .subtitle{ margin:0 0 14px 0; color:#9aa4b2; font-size:14px; line-height:1.35; }
+/* ===============================
+   LOAD + RENDER
+================================ */
 
-    .topbar{ display:flex; flex-wrap:wrap; gap:10px 12px; align-items:center; margin:10px 0 12px 0; }
-    .control{ display:flex; align-items:center; gap:8px; background:#161b22; border:1px solid #30363d; border-radius:999px; padding:8px 10px; }
-    .control label{ color:#c9d1d9; font-size:13px; font-weight:800; margin-right:4px; }
-    select, input, button{
-      border-radius:999px;
-      border:1px solid #30363d;
-      background:#0d1117;
-      color:#e6edf3;
-      padding:8px 12px;
-      font-size:13px;
-      outline:none;
-    }
-    input::placeholder{ color:#8b949e; }
+fetch("./malhas.json")
+  .then(res => res.json())
+  .then(data => renderTabela(data));
 
-    .pill{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:8px 12px;
-      border-radius:999px;
-      background:#161b22;
-      border:1px solid #30363d;
-      color:#c9d1d9;
-      font-size:13px;
-      font-weight:800;
-      white-space:nowrap;
-    }
+function renderTabela(data) {
+  const tbody = document.getElementById("tabela-malhas");
+  tbody.innerHTML = "";
 
-    .tabs{ display:flex; flex-wrap:wrap; gap:10px; margin:10px 0 10px 0; }
-    .tab{
-      cursor:pointer;
-      border-radius:999px;
-      padding:10px 14px;
-      border:1px solid #30363d;
-      background:#161b22;
-      color:#e6edf3;
-      font-size:13px;
-      font-weight:900;
-    }
-    .tab.active{ background:#1f6feb; border-color:#1f6feb; color:#fff; }
+  const dia = Object.keys(data.dias)[0];
+  const itensDia = data.dias[dia]?.itens || [];
 
-    .card{
-      background:#161b22;
-      border:1px solid #30363d;
-      border-radius:14px;
-      padding:12px;
-      box-shadow:0 1px 3px rgba(0,0,0,0.35);
-    }
+  const mapa = {};
+  itensDia.forEach(i => mapa[i.id] = i);
 
-    .legend{
-      display:flex; flex-wrap:wrap; gap:10px 14px; align-items:center;
-      padding:10px 12px; border-radius:14px;
-      border:1px solid #30363d; background:#0f141b;
-      margin:10px 0 12px 0; font-size:13px; color:#c9d1d9;
-    }
-    .legend .title{ font-weight:900; color:#fff; margin-right:6px; }
-    .legend-item{ display:inline-flex; align-items:center; gap:8px; white-space:nowrap; }
+  ORDEM_CATEGORIAS.forEach(cat => {
+    const trCat = document.createElement("tr");
+    trCat.className = "category";
+    trCat.innerHTML = `<td colspan="7">${cat}</td>`;
+    tbody.appendChild(trCat);
 
-    .dot{ width:12px; height:12px; border-radius:50%; border:1px solid rgba(255,255,255,0.15); display:inline-block; }
-    .dot-em_execucao{ background:#d29922; }
-    .dot-ok{ background:#2ea043; }
-    .dot-contingencia{ background:#1f6feb; }
-    .dot-abend{ background:#f85149; }
-    .dot-nao_comecou{ background:#a371f7; }
-    .dot-ag_condicao{ background:#8b949e; }
-    .dot-sem_exec{ background:#010409; border:1px solid #30363d; }
+    ORDEM_MALHAS[cat].forEach(nome => {
+      const item = Object.values(mapa).find(m => m.nome === nome) || {
+        status: "sem_exec",
+        ultimo_job: "-",
+        termino_real: "-",
+        fim_de_jogo: false,
+        observacao: ""
+      };
 
-    .filters{
-      display:flex; flex-wrap:wrap; gap:10px 12px; align-items:center;
-      margin:10px 0 12px 0;
-    }
-    .filters .group{ display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
-    .filters .group .label{ font-size:13px; font-weight:900; color:#c9d1d9; margin-right:6px; }
-
-    .chip{
-      cursor:pointer; user-select:none;
-      border-radius:999px; padding:8px 12px;
-      border:1px solid #30363d; background:#0d1117;
-      font-size:13px; font-weight:900; color:#e6edf3;
-    }
-    .chip.active{ background:#fff; color:#0d1117; border-color:#fff; }
-
-    table{
-      width:100%; border-collapse:separate; border-spacing:0;
-      overflow:hidden; border-radius:14px; border:1px solid #30363d;
-    }
-    thead th{
-      background:#21262d; color:#e6edf3;
-      font-size:12px; padding:10px 10px;
-      border-bottom:1px solid #30363d; white-space:nowrap; text-align:left;
-    }
-    tbody td{
-      padding:10px 10px; border-bottom:1px solid #30363d;
-      font-size:13px; color:#e6edf3; white-space:nowrap; vertical-align:top;
-    }
-    tbody tr:nth-child(even){ background:#0f141b; }
-    tbody tr:last-child td{ border-bottom:none; }
-
-    .status-cell{ display:flex; align-items:center; gap:8px; font-weight:900; }
-    .note{ white-space:normal; color:#c9d1d9; max-width:520px; }
-    .muted{ color:#9aa4b2; }
-
-    .badge{
-      display:inline-flex; align-items:center; justify-content:center;
-      padding:4px 10px; border-radius:999px;
-      font-weight:1000; font-size:12px;
-      border:1px solid #30363d; background:#0d1117; color:#e6edf3;
-      white-space:nowrap;
-    }
-    .badge.T1{ border-color:#1f6feb; }
-    .badge.T2{ border-color:#d29922; }
-    .badge.T3{ border-color:#f85149; }
-
-    textarea{
-      width:100%; min-height:260px; border-radius:14px;
-      border:1px solid #30363d; background:#0d1117; color:#e6edf3;
-      padding:12px;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      font-size:13px; resize:vertical;
-    }
-
-    .quick-grid{ display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:12px; margin-top:10px; }
-    .quick-item{
-      display:flex; align-items:center; justify-content:space-between; gap:10px;
-      padding:12px; border-radius:14px; border:1px solid #30363d; background:#0f141b;
-    }
-    .quick-left{ display:flex; align-items:center; gap:10px; min-width:0; }
-    .quick-name{ font-weight:1000; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:240px; }
-    .quick-meta{ font-size:12px; color:#9aa4b2; margin-top:2px; }
-
-    .kpis{ display:grid; grid-template-columns:repeat(auto-fit, minmax(220px,1fr)); gap:12px; margin-top:10px; }
-    .kpi-title{ color:#9aa4b2; font-size:13px; font-weight:900; margin-bottom:6px; }
-    .kpi-value{ font-size:34px; font-weight:1000; line-height:1; }
-
-    .hint{ margin-top:10px; font-size:12px; color:#9aa4b2; }
-    .footer{ margin-top:14px; font-size:11px; color:#8b949e; }
-  </style>
-</head>
-
-<body>
-  <h1>Painel de Malhas por Turno - Janeiro 2026</h1>
-  <p class="subtitle">
-    Painel read-only com fonte em malhas.json. Tabela no padrão RTB: previsto, iniciado e finalizado, com filtros e resumo para o time.
-  </p>
-
-  <div class="topbar">
-    <div class="control">
-      <label>Mês:</label>
-      <select id="monthSelect"></select>
-    </div>
-
-    <div class="control">
-      <label>Dia:</label>
-      <select id="daySelect"></select>
-    </div>
-
-    <span class="pill" id="odatePill">Odate: -</span>
-    <span class="pill" id="sourcePill">Fonte: malhas.json</span>
-    <span class="pill" id="syncPill">Sync: -</span>
-  </div>
-
-  <div class="tabs">
-    <button class="tab active" data-tab="quadro">Quadro diário</button>
-    <button class="tab" data-tab="status">Status das malhas</button>
-    <button class="tab" data-tab="resumo">Resumo do dia (para o time)</button>
-    <button class="tab" data-tab="indicadores">Indicadores do mês</button>
-    <button class="tab" data-tab="instrucoes">Instruções</button>
-  </div>
-
-  <div class="legend">
-    <span class="title">Legenda</span>
-    <span class="legend-item"><span class="dot dot-em_execucao"></span> Em execução</span>
-    <span class="legend-item"><span class="dot dot-ok"></span> Finalizado</span>
-    <span class="legend-item"><span class="dot dot-contingencia"></span> Contingência</span>
-    <span class="legend-item"><span class="dot dot-abend"></span> Abend</span>
-    <span class="legend-item"><span class="dot dot-nao_comecou"></span> Não começou</span>
-    <span class="legend-item"><span class="dot dot-ag_condicao"></span> Aguardando condição</span>
-    <span class="legend-item"><span class="dot dot-sem_exec"></span> Sem execução no Odate</span>
-    <span class="legend-item">⚪/🔵 em “Fim de jogo” = não validado / validado</span>
-  </div>
-
-  <div id="filters" class="filters card">
-    <div class="group">
-      <span class="label">Filtrar por turno:</span>
-      <span class="chip active" data-filter="turno" data-value="Todos">Todos</span>
-      <span class="chip" data-filter="turno" data-value="T1">T1</span>
-      <span class="chip" data-filter="turno" data-value="T2">T2</span>
-      <span class="chip" data-filter="turno" data-value="T3">T3</span>
-    </div>
-
-    <div class="group">
-      <span class="label">Filtrar por categoria:</span>
-      <span class="chip active" data-filter="categoria" data-value="Todas">Todas</span>
-      <span class="chip" data-filter="categoria" data-value="Rotativos">Rotativos</span>
-      <span class="chip" data-filter="categoria" data-value="Parcelados">Parcelados</span>
-      <span class="chip" data-filter="categoria" data-value="Modelos">Modelos</span>
-      <span class="chip" data-filter="categoria" data-value="Gestão PJ e Alto Risco">Gestão PJ e Alto Risco</span>
-      <span class="chip" data-filter="categoria" data-value="Semanal">Semanal</span>
-    </div>
-
-    <div class="group">
-      <span class="label">Buscar malha:</span>
-      <input id="searchInput" placeholder="Ex.: SUPER CRÉDITO, CONSIGNADO" />
-      <button id="btnClear">Limpar</button>
-    </div>
-  </div>
-
-  <div id="viewQuadro" class="card">
-    <table>
-      <thead>
-        <tr>
-          <th>Categoria</th>
-          <th>Malha</th>
-          <th>Turno final</th>
-          <th>Início previsto</th>
-          <th>Término previsto</th>
-          <th>Frequência</th>
-          <th>Iniciado</th>
-          <th>Finalizado</th>
-          <th>Status</th>
-          <th>Fim de jogo</th>
-          <th>Nota</th>
-        </tr>
-      </thead>
-      <tbody id="tbodyQuadro"></tbody>
-    </table>
-    <div class="hint">Read-only. Atualize o malhas.json via automação e o painel reflete.</div>
-  </div>
-
-  <div id="viewStatus" class="card" style="display:none;">
-    <div class="hint">Visão rápida por status do dia selecionado.</div>
-    <div id="quickGrid" class="quick-grid"></div>
-  </div>
-
-  <div id="viewResumo" class="card" style="display:none;">
-    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:10px;">
-      <button id="btnGerarResumo">Gerar resumo</button>
-      <span class="pill" id="resumoInfo">-</span>
-    </div>
-    <textarea id="resumoText" readonly></textarea>
-    <div class="hint">Copie e cole no Teams. 🔵 = fim de jogo validado.</div>
-  </div>
-
-  <div id="viewIndicadores" class="card" style="display:none;">
-    <div class="kpis">
-      <div class="card">
-        <div class="kpi-title">ABEND no mês</div>
-        <div class="kpi-value" id="kpiAbend">0</div>
-      </div>
-      <div class="card">
-        <div class="kpi-title">Contingência no mês</div>
-        <div class="kpi-value" id="kpiCont">0</div>
-      </div>
-      <div class="card">
-        <div class="kpi-title">Dias com ocorrência</div>
-        <div class="kpi-value" id="kpiDias">0</div>
-      </div>
-    </div>
-
-    <div style="margin-top:14px;">
-      <div style="font-weight:1000;margin-bottom:8px;">Ocorrências por dia (mês)</div>
-      <div id="barsMes" class="muted">Sem dados.</div>
-    </div>
-  </div>
-
-  <div id="viewInstrucoes" class="card" style="display:none;">
-    <div style="font-weight:1000;margin-bottom:10px;">Como usar</div>
-    <ul style="margin:0;padding-left:18px;color:#c9d1d9;line-height:1.5;">
-      <li>Selecione mês e dia (Odate) no topo.</li>
-      <li>Use os filtros para turno, categoria e busca.</li>
-      <li>Quadro diário replica o padrão RTB: previsto, iniciado e finalizado.</li>
-      <li>Status das malhas é visão rápida em cards.</li>
-      <li>Resumo do dia gera texto pronto para Teams.</li>
-      <li>Indicadores soma ABEND e contingência no mês.</li>
-      <li>Painel é read-only. Fonte é malhas.json.</li>
-    </ul>
-    <div class="hint">Próximo passo: automação do malhas.json via Databricks ou Control-M.</div>
-  </div>
-
-  <div class="footer">
-    Fonte: ./malhas.json (GitHub Pages). Atualize o JSON via automação (Databricks / Control-M) e o painel reflete.
-  </div>
-
-<script>
-  const JSON_URL = "./malhas.json";
-
-  const MONTHS_PT = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
-
-  function pad2(n){ return String(n).padStart(2,"0"); }
-  function isLeapYear(year){ return (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0); }
-  function daysInMonth(year, month1to12){
-    if(month1to12 === 2) return isLeapYear(year) ? 29 : 28;
-    if([4,6,9,11].includes(month1to12)) return 30;
-    return 31;
-  }
-
-  function statusLabel(s){
-    const map = {
-      ok: "Finalizado",
-      em_execucao: "Em execução",
-      contingencia: "Contingência",
-      abend: "Abend",
-      nao_comecou: "Não começou",
-      ag_condicao: "Aguardando condição",
-      sem_exec: "Sem execução"
-    };
-    return map[s] || String(s || "-");
-  }
-  function dotClass(s){ return "dot-" + String(s || "ag_condicao"); }
-  function safeText(v){ return String(v ?? "").replaceAll("<","&lt;").replaceAll(">","&gt;"); }
-
-  let rawData = null;
-  let state = { month: "2026-01", day: "01", filtroTurno: "Todos", filtroCategoria: "Todas", busca: "" };
-
-  function setPills(){
-    const [yy, mm] = state.month.split("-");
-    document.getElementById("odatePill").textContent = `Odate: ${state.day}/${mm}/${yy}`;
-  }
-
-  function buildMonthSelect(){
-    const sel = document.getElementById("monthSelect");
-    sel.innerHTML = "";
-    for(let m=1;m<=12;m++){
-      const mm = pad2(m);
-      const opt = document.createElement("option");
-      opt.value = `2026-${mm}`;
-      opt.textContent = `${MONTHS_PT[m-1]} 2026`;
-      sel.appendChild(opt);
-    }
-    sel.value = state.month;
-  }
-
-  function buildDaySelect(){
-    const [yy, mm] = state.month.split("-");
-    const max = daysInMonth(Number(yy), Number(mm));
-    const sel = document.getElementById("daySelect");
-    sel.innerHTML = "";
-    for(let d=1; d<=max; d++){
-      const dd = pad2(d);
-      const opt = document.createElement("option");
-      opt.value = dd;
-      opt.textContent = dd;
-      sel.appendChild(opt);
-    }
-    if(Number(state.day) > max) state.day = pad2(max);
-    sel.value = state.day;
-  }
-
-  function getDiaKey(){ return `${state.month}-${state.day}`; }
-
-  function catalogMap(){
-    const m = new Map();
-    (rawData.catalogo_malhas || []).forEach(x => m.set(x.id, x));
-    return m;
-  }
-
-  function getItensDoDia(){
-    const key = getDiaKey();
-    const dia = rawData.dias && rawData.dias[key];
-    const itens = (dia && Array.isArray(dia.itens)) ? dia.itens : [];
-    return { dia, itens };
-  }
-
-  function normalizeCategoria(meta){
-    return meta.categoria || meta.tipo || "Outros";
-  }
-
-  function matchesFilters(meta, it){
-    const turnoFinal = meta.turno_final || meta.turno || "-";
-    const categoria = normalizeCategoria(meta);
-
-    if(state.filtroTurno !== "Todos" && turnoFinal !== state.filtroTurno) return false;
-
-    if(state.filtroCategoria !== "Todas"){
-      // compatibilidade: se seu JSON antigo usa "Parcelado" e agora o filtro é "Parcelados"
-      const cat = categoria;
-      if(cat !== state.filtroCategoria) return false;
-    }
-
-    const q = (state.busca || "").trim().toLowerCase();
-    if(q){
-      const name = (meta.nome || it.id || "").toLowerCase();
-      if(!name.includes(q)) return false;
-    }
-    return true;
-  }
-
-  function categoryOrderKey(cat){
-    const order = ["Rotativos","Parcelados","Modelos","Gestão PJ e Alto Risco","Semanal","Outros"];
-    const i = order.indexOf(cat);
-    return i === -1 ? 999 : i;
-  }
-
-  function renderQuadro(){
-    const tbody = document.getElementById("tbodyQuadro");
-    tbody.innerHTML = "";
-
-    const cat = catalogMap();
-    const { itens } = getItensDoDia();
-
-    if(!itens.length){
-      const tr = document.createElement("tr");
-      tr.innerHTML = `<td colspan="11" class="muted">Sem dados para ${getDiaKey()} no JSON.</td>`;
-      tbody.appendChild(tr);
-      return;
-    }
-
-    const rows = [];
-    itens.forEach(it => {
-      const meta = cat.get(it.id) || {};
-      if(!matchesFilters(meta, it)) return;
-
-      const categoria = normalizeCategoria(meta);
-      const malha = meta.nome || it.id;
-      const turnoFinal = meta.turno_final || meta.turno || "-";
-      const inicioPrev = meta.inicio_previsto || "-";
-      const terminoPrev = meta.termino_previsto || "-";
-      const freq = meta.frequencia || meta.freq || "-";
-
-      const inicioReal = it.inicio_real || "-";
-      const terminoReal = it.termino_real || "-";
-
-      const st = String(it.status || "ag_condicao");
-      const fim = it.fim_de_jogo ? "🔵" : "⚪";
-      const nota = it.nota || "";
-
-      rows.push({ categoria, malha, turnoFinal, inicioPrev, terminoPrev, freq, inicioReal, terminoReal, st, fim, nota });
-    });
-
-    if(!rows.length){
-      const tr = document.createElement("tr");
-      tr.innerHTML = `<td colspan="11" class="muted">Nenhum item com os filtros atuais.</td>`;
-      tbody.appendChild(tr);
-      return;
-    }
-
-    rows.sort((a,b)=>{
-      const ca = categoryOrderKey(a.categoria) - categoryOrderKey(b.categoria);
-      if(ca !== 0) return ca;
-      // ordena por término previsto quando existir
-      const ta = String(a.terminoPrev), tb = String(b.terminoPrev);
-      if(ta !== tb) return ta.localeCompare(tb);
-      return a.malha.localeCompare(b.malha);
-    });
-
-    rows.forEach(r=>{
       const tr = document.createElement("tr");
       tr.innerHTML = `
-        <td>${safeText(r.categoria)}</td>
-        <td style="font-weight:1000;">${safeText(r.malha)}</td>
-        <td><span class="badge ${safeText(r.turnoFinal)}">${safeText(r.turnoFinal)}</span></td>
-        <td>${safeText(r.inicioPrev)}</td>
-        <td>${safeText(r.terminoPrev)}</td>
-        <td>${safeText(r.freq)}</td>
-        <td>${safeText(r.inicioReal)}</td>
-        <td>${safeText(r.terminoReal)}</td>
-        <td>
-          <div class="status-cell">
-            <span class="dot ${dotClass(r.st)}"></span>
-            <span>${safeText(statusLabel(r.st))}</span>
-          </div>
-        </td>
-        <td style="text-align:center;font-size:16px;">${r.fim}</td>
-        <td class="note">${safeText(r.nota)}</td>
+        <td>${cat}</td>
+        <td>${nome}</td>
+        <td class="status ${item.status}">${item.status}</td>
+        <td>${item.ultimo_job || "-"}</td>
+        <td>${item.termino_real || "-"}</td>
+        <td class="fim-jogo">${item.fim_de_jogo ? "🔵" : "⚪"}</td>
+        <td class="obs">${item.observacao || "-"}</td>
       `;
       tbody.appendChild(tr);
     });
-  }
-
-  function renderStatusCards(){
-    const grid = document.getElementById("quickGrid");
-    grid.innerHTML = "";
-
-    const cat = catalogMap();
-    const { itens } = getItensDoDia();
-
-    if(!itens.length){
-      grid.innerHTML = `<div class="muted">Sem dados para ${getDiaKey()} no JSON.</div>`;
-      return;
-    }
-
-    const order = ["abend","contingencia","em_execucao","nao_comecou","ag_condicao","ok","sem_exec"];
-    const entries = [];
-
-    itens.forEach(it=>{
-      const meta = cat.get(it.id) || {};
-      if(!matchesFilters(meta, it)) return;
-
-      const st = String(it.status || "ag_condicao");
-      const malha = meta.nome || it.id;
-      const categoria = normalizeCategoria(meta);
-      const turnoFinal = meta.turno_final || meta.turno || "-";
-      const fim = it.fim_de_jogo ? "🔵" : "⚪";
-      const inicioReal = it.inicio_real || "-";
-      const terminoReal = it.termino_real || "-";
-
-      entries.push({ st, malha, categoria, turnoFinal, fim, inicioReal, terminoReal });
-    });
-
-    if(!entries.length){
-      grid.innerHTML = `<div class="muted">Nenhum item com os filtros atuais.</div>`;
-      return;
-    }
-
-    entries.sort((a,b)=>{
-      const ia = order.indexOf(a.st); const ib = order.indexOf(b.st);
-      if(ia !== ib) return (ia===-1?999:ia) - (ib===-1?999:ib);
-      const ca = categoryOrderKey(a.categoria) - categoryOrderKey(b.categoria);
-      if(ca !== 0) return ca;
-      return a.malha.localeCompare(b.malha);
-    });
-
-    entries.forEach(e=>{
-      const div = document.createElement("div");
-      div.className = "quick-item";
-      div.innerHTML = `
-        <div class="quick-left">
-          <span class="dot ${dotClass(e.st)}"></span>
-          <div style="min-width:0;">
-            <div class="quick-name">${safeText(e.malha)}</div>
-            <div class="quick-meta">${safeText(e.categoria)} • ${safeText(e.turnoFinal)} • Ini: ${safeText(e.inicioReal)} • Fin: ${safeText(e.terminoReal)} • ${e.fim}</div>
-          </div>
-        </div>
-        <div style="font-weight:1000;">${safeText(statusLabel(e.st))}</div>
-      `;
-      grid.appendChild(div);
-    });
-  }
-
-  function gerarResumo(){
-    const cat = catalogMap();
-    const key = getDiaKey();
-    const { dia, itens } = getItensDoDia();
-
-    const [yy, mm] = state.month.split("-");
-    const odate = `${state.day}/${mm}/${yy}`;
-
-    const byCat = new Map();
-    itens.forEach(it=>{
-      const meta = cat.get(it.id) || {};
-      if(!matchesFilters(meta, it)) return;
-
-      const categoria = normalizeCategoria(meta);
-      if(!byCat.has(categoria)) byCat.set(categoria, []);
-      byCat.get(categoria).push({ it, meta });
-    });
-
-    const order = ["Rotativos","Parcelados","Modelos","Gestão PJ e Alto Risco","Semanal","Outros"];
-    const cats = [...byCat.keys()].sort((a,b)=>{
-      const ia = order.indexOf(a), ib = order.indexOf(b);
-      if(ia===-1 && ib===-1) return a.localeCompare(b);
-      if(ia===-1) return 1;
-      if(ib===-1) return -1;
-      return ia-ib;
-    });
-
-    const lines = [];
-    lines.push("Acompanhamento Malhas");
-    lines.push("");
-    lines.push(`Odate: ${odate}`);
-    lines.push("");
-
-    cats.forEach(categoria=>{
-      lines.push(`- ${categoria}:`);
-      byCat.get(categoria).forEach(({it, meta})=>{
-        const fim = it.fim_de_jogo ? "🔵 " : "";
-        const st = statusLabel(it.status);
-        const nome = meta.nome || it.id;
-
-        const ini = it.inicio_real ? ` Ini: ${it.inicio_real}` : "";
-        const fin = it.termino_real ? ` Fin: ${it.termino_real}` : "";
-        const nota = it.nota ? ` - ${it.nota}` : "";
-
-        lines.push(`${fim}${st} - ${nome}${ini}${fin}${nota}`);
-      });
-      lines.push("");
-    });
-
-    const updated = (dia && (dia.updatedAt || dia.updated_at)) ? (dia.updatedAt || dia.updated_at) : "";
-    document.getElementById("resumoInfo").textContent = updated ? `JSON updatedAt: ${updated}` : `Dia: ${key}`;
-    document.getElementById("resumoText").value = lines.join("\n");
-  }
-
-  function computeMonthStats(){
-    const prefix = state.month + "-";
-    const dias = rawData.dias || {};
-    let totalAbend = 0;
-    let totalCont = 0;
-    const perDay = {};
-    const daysWithAny = new Set();
-
-    Object.entries(dias).forEach(([dateKey, dayObj])=>{
-      if(!dateKey.startsWith(prefix)) return;
-      const dd = dateKey.split("-")[2];
-      const itens = (dayObj && Array.isArray(dayObj.itens)) ? dayObj.itens : [];
-
-      let a = 0, c = 0;
-      itens.forEach(it=>{
-        if(it.status === "abend") a++;
-        if(it.status === "contingencia") c++;
-      });
-
-      if(a+c > 0){
-        daysWithAny.add(dateKey);
-        perDay[dd] = (perDay[dd] || 0) + (a+c);
-      }
-      totalAbend += a;
-      totalCont += c;
-    });
-
-    return { totalAbend, totalCont, daysWithAny: daysWithAny.size, perDay };
-  }
-
-  function renderIndicadores(){
-    const s = computeMonthStats();
-    document.getElementById("kpiAbend").textContent = String(s.totalAbend);
-    document.getElementById("kpiCont").textContent = String(s.totalCont);
-    document.getElementById("kpiDias").textContent = String(s.daysWithAny);
-
-    const [yy, mm] = state.month.split("-");
-    const max = daysInMonth(Number(yy), Number(mm));
-
-    const values = [];
-    for(let d=1; d<=max; d++) values.push(s.perDay[pad2(d)] || 0);
-    const maxV = Math.max(1, ...values);
-
-    if(s.totalAbend + s.totalCont === 0){
-      document.getElementById("barsMes").textContent = "Sem ocorrências de Abend/Contingência no mês.";
-      return;
-    }
-
-    let html = "";
-    for(let d=1; d<=max; d++){
-      const dd = pad2(d);
-      const val = s.perDay[dd] || 0;
-      const pct = Math.max(3, (val / maxV) * 100);
-      html += `
-        <div style="display:flex;align-items:center;gap:10px;margin:6px 0;font-size:12px;">
-          <div style="width:60px;font-weight:900;">${dd}/${mm}</div>
-          <div style="flex:1;background:#21262d;border-radius:999px;height:14px;position:relative;border:1px solid #30363d;">
-            <div style="height:100%;width:${pct}%;border-radius:999px;background:#f85149;"></div>
-            <div style="position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:10px;color:#e6edf3;font-weight:900;">${val}</div>
-          </div>
-        </div>
-      `;
-    }
-    document.getElementById("barsMes").innerHTML = html;
-  }
-
-  function showTab(tab){
-    document.getElementById("viewQuadro").style.display = tab === "quadro" ? "block" : "none";
-    document.getElementById("viewStatus").style.display = tab === "status" ? "block" : "none";
-    document.getElementById("viewResumo").style.display = tab === "resumo" ? "block" : "none";
-    document.getElementById("viewIndicadores").style.display = tab === "indicadores" ? "block" : "none";
-    document.getElementById("viewInstrucoes").style.display = tab === "instrucoes" ? "block" : "none";
-
-    const showFilters = (tab === "quadro" || tab === "status" || tab === "resumo");
-    document.getElementById("filters").style.display = showFilters ? "flex" : "none";
-  }
-
-  async function loadJson(){
-    const url = JSON_URL + "?t=" + Date.now();
-    const res = await fetch(url, { cache: "no-store" });
-    if(!res.ok) throw new Error("HTTP " + res.status);
-    return res.json();
-  }
-
-  function setSync(text){ document.getElementById("syncPill").textContent = "Sync: " + text; }
-
-  function setActiveChip(filter, value){
-    document.querySelectorAll(`.chip[data-filter="${filter}"]`).forEach(ch=>{
-      ch.classList.toggle("active", ch.getAttribute("data-value") === value);
-    });
-  }
-
-  async function refresh(){
-    try{
-      setSync("carregando...");
-      rawData = await loadJson();
-
-      const key = getDiaKey();
-      const dia = rawData.dias && rawData.dias[key];
-      const updated = dia && (dia.updatedAt || dia.updated_at);
-
-      setSync(updated ? updated : new Date().toISOString());
-
-      renderQuadro();
-      renderStatusCards();
-      renderIndicadores();
-    }catch(e){
-      setSync("falhou (verifique malhas.json)");
-      console.error(e);
-      document.getElementById("tbodyQuadro").innerHTML = `<tr><td colspan="11" class="muted">Falha ao carregar malhas.json.</td></tr>`;
-      document.getElementById("quickGrid").innerHTML = `<div class="muted">Falha ao carregar malhas.json.</div>`;
-      document.getElementById("barsMes").textContent = "Falha ao carregar malhas.json.";
-    }
-  }
-
-  function init(){
-    buildMonthSelect();
-    buildDaySelect();
-    setPills();
-
-    document.getElementById("monthSelect").addEventListener("change", (e)=>{
-      state.month = e.target.value;
-      buildDaySelect();
-      setPills();
-      refresh();
-    });
-    document.getElementById("daySelect").addEventListener("change", (e)=>{
-      state.day = e.target.value;
-      setPills();
-      refresh();
-    });
-
-    document.querySelectorAll(".tab").forEach(btn=>{
-      btn.addEventListener("click", ()=>{
-        document.querySelectorAll(".tab").forEach(b=>b.classList.remove("active"));
-        btn.classList.add("active");
-        const tab = btn.getAttribute("data-tab");
-        showTab(tab);
-        if(tab === "resumo") gerarResumo();
-        if(tab === "status") renderStatusCards();
-        if(tab === "indicadores") renderIndicadores();
-      });
-    });
-
-    document.querySelectorAll(".chip").forEach(ch=>{
-      ch.addEventListener("click", ()=>{
-        const filter = ch.getAttribute("data-filter");
-        const value = ch.getAttribute("data-value");
-        if(filter === "turno"){
-          state.filtroTurno = value;
-          setActiveChip("turno", value);
-        }else if(filter === "categoria"){
-          state.filtroCategoria = value;
-          setActiveChip("categoria", value);
-        }
-        renderQuadro();
-        renderStatusCards();
-      });
-    });
-
-    const search = document.getElementById("searchInput");
-    search.addEventListener("input", ()=>{
-      state.busca = search.value;
-      renderQuadro();
-      renderStatusCards();
-    });
-
-    document.getElementById("btnClear").addEventListener("click", ()=>{
-      state.busca = "";
-      search.value = "";
-      state.filtroTurno = "Todos";
-      state.filtroCategoria = "Todas";
-      setActiveChip("turno", "Todos");
-      setActiveChip("categoria", "Todas");
-      renderQuadro();
-      renderStatusCards();
-    });
-
-    document.getElementById("btnGerarResumo").addEventListener("click", gerarResumo);
-
-    showTab("quadro");
-    refresh();
-    setInterval(refresh, 15000);
-  }
-
-  document.addEventListener("DOMContentLoaded", init);
+  });
+}
 </script>
+
 </body>
 </html>
-
