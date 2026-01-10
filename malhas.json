@@ -1,0 +1,26 @@
+{
+  "version": "1.0",
+  "timezone": "America/Sao_Paulo",
+  "turnos": {
+    "T1": { "inicio": "07:00", "fim": "17:00" },
+    "T2": { "inicio": "15:00", "fim": "23:00" },
+    "T3": { "inicio": "23:00", "fim": "07:00" }
+  },
+  "catalogo_malhas": [
+    { "id": "adm", "nome": "Admissão", "tipo": "Rotativo", "turno": "T3" },
+    { "id": "consignado", "nome": "Consignado", "tipo": "Parcelado", "turno": "T3" },
+    { "id": "consorcio", "nome": "Consórcio", "tipo": "Parcelado", "turno": "T3" },
+    { "id": "cp_investidor", "nome": "CP Investidor", "tipo": "Parcelado", "turno": "T3" }
+  ],
+  "dias": {
+    "2026-01-10": {
+      "updatedAt": "2026-01-10T02:25:00-03:00",
+      "itens": [
+        { "id": "adm", "status": "ok", "ultimo_job": "05:07", "termino_real": "05:07", "fim_de_jogo": true, "nota": "" },
+        { "id": "consignado", "status": "abend", "ultimo_job": "04:46", "termino_real": "04:46", "fim_de_jogo": false, "nota": "Falha no fluxo, em análise" },
+        { "id": "consorcio", "status": "contingencia", "ultimo_job": "02:51", "termino_real": "02:51", "fim_de_jogo": true, "nota": "Rodou em contingência" },
+        { "id": "cp_investidor", "status": "ok", "ultimo_job": "01:43", "termino_real": "01:43", "fim_de_jogo": true, "nota": "" }
+      ]
+    }
+  }
+}
