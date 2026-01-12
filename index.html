@@ -5,6 +5,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Painel de Malhas por Turno - Janeiro 2026</title>
+
   <style>
     :root{
       --bg:#0b1220;
@@ -283,9 +284,10 @@
     }
   </style>
 </head>
+
 <body>
   <div class="container">
-    <h1>Painel de Malhas por Turno - Janeiro 2026</h1>
+    <h1 id="titulo">Painel de Malhas por Turno - Janeiro 2026</h1>
     <p class="sub">
       Painel com fonte em malhas.json. Tabela no padrão RTB: previsto, iniciado e finalizado, com filtros, resumo e indicadores do mês.
     </p>
@@ -520,7 +522,8 @@
     }
 
     // ======= STATE =======
-    let DATA = null;
+    let RAW = null;            // json bruto
+    let DATA = null;           // normalizado no formato {dias, catalogo_malhas}
     let currentMes = null;     // "YYYY-MM"
     let currentDia = null;     // "YYYY-MM-DD"
     let filtroTurno = "Todos"; // Todos|T1|T2|T3
@@ -544,11 +547,73 @@
 
     // ======= FETCH =======
     async function loadJson(){
-      // cache bust
       const url = `./malhas.json?ts=${Date.now()}`;
       const r = await fetch(url, { cache: "no-store" });
       if(!r.ok) throw new Error("Falha ao carregar malhas.json");
       return await r.json();
+    }
+
+    // ======= NORMALIZACAO (evita quebrar se mudar formato do JSON) =======
+    function normalizeJson(json){
+      // Formato esperado:
+      // { dias: { "YYYY-MM-DD": { updatedAt, itens:[...] } }, catalogo_malhas:[...] }
+      if(json && typeof json === "object" && !Array.isArray(json) && json.dias && json.catalogo_malhas){
+        return json;
+      }
+
+      // Se vier como { items: ... } ou { data: ... }
+      if(json && typeof json === "object" && !Array.isArray(json)){
+        if(json.items && json.dias && json.catalogo_malhas) return json;
+        if(json.data && json.data.dias && json.data.catalogo_malhas) return json.data;
+      }
+
+      // Se vier como array simples, tenta montar um mínimo:
+      // [{ data:"YYYY-MM-DD", id:"...", status:"..." ... }]
+      if(Array.isArray(json)){
+        const dias = {};
+        const catalogSet = new Map(); // id -> catalog
+
+        for(const it of json){
+          const dia = it.data || it.odate || it.dia;
+          if(!dia) continue;
+
+          if(!dias[dia]) dias[dia] = { updatedAt: "-", itens: [] };
+
+          // id obrigatório para casar com catálogo
+          const id = it.id || it.malha_id || it.nome || it.malha;
+          if(!id) continue;
+
+          const cat = it.categoria || "Rotativos";
+          const nome = it.nome || it.malha || id;
+          const turno_final = it.turno_final || it.turno || "T1";
+
+          if(!catalogSet.has(id)){
+            catalogSet.set(id, {
+              id,
+              categoria: cat,
+              nome,
+              turno_final,
+              inicio_previsto: it.inicio_previsto || "-",
+              termino_previsto: it.termino_previsto || "-",
+              frequencia: it.frequencia || "-"
+            });
+          }
+
+          dias[dia].itens.push({
+            id,
+            status: it.status || "sem_exec",
+            ultimo_job: it.ultimo_job || it.ultimoJob || "-",
+            termino_real: it.termino_real || it.terminoReal || "-",
+            fim_de_jogo: !!it.fim_de_jogo,
+            nota: it.nota || ""
+          });
+        }
+
+        return { dias, catalogo_malhas: Array.from(catalogSet.values()) };
+      }
+
+      // fallback final
+      return { dias: {}, catalogo_malhas: [] };
     }
 
     // ======= HELPERS =======
@@ -589,7 +654,6 @@
     }
 
     function normalizeTH3(s){
-      // força "TH3 - OY"
       return canonicalName(s).replace("TH3 – OY","TH3 - OY");
     }
 
@@ -608,6 +672,19 @@
         if(!row.nome.includes(b)) return false;
       }
       return true;
+    }
+
+    function formatMesBR(ym){
+      const [y,m] = ym.split("-");
+      const nomes = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
+      return `${nomes[parseInt(m,10)-1]} ${y}`;
+    }
+
+    function updateTitulo(){
+      const t = document.getElementById("titulo");
+      if(!t || !currentMes) return;
+      t.textContent = `Painel de Malhas por Turno - ${formatMesBR(currentMes)}`;
+      document.title = t.textContent;
     }
 
     // ======= RENDER =======
@@ -637,33 +714,27 @@
       }
 
       if(!currentDia) currentDia = dias[dias.length-1] || dias[0] || "2026-01-10";
-      if(!dias.includes(currentDia)) currentDia = dias[dias.length-1] || dias[0];
+      if(dias.length && !dias.includes(currentDia)) currentDia = dias[dias.length-1] || dias[0];
 
       selDia.value = currentDia;
-      document.getElementById("odate").textContent = ymdToBR(currentDia);
+      document.getElementById("odate").textContent = currentDia ? ymdToBR(currentDia) : "-";
 
       const diaData = getDiaData(currentDia);
-      document.getElementById("sync").textContent = diaData?.updatedAt || "-";
+      document.getElementById("sync").textContent = (diaData && diaData.updatedAt) ? diaData.updatedAt : "-";
       document.getElementById("fonte").textContent = "malhas";
-    }
 
-    function formatMesBR(ym){
-      const [y,m] = ym.split("-");
-      const nomes = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
-      return `${nomes[parseInt(m,10)-1]} ${y}`;
+      updateTitulo();
     }
 
     function buildRowsForDay(dia){
       const catalogIdx = buildCatalogIndex();
       const diaData = getDiaData(dia);
 
-      // mapa de itens do dia por id
       const itensMap = {};
       for(const it of (diaData?.itens || [])){
         itensMap[it.id] = it;
       }
 
-      // gera rows sempre pelo catálogo (100% completo)
       const rows = (DATA.catalogo_malhas || []).map(c => {
         const item = itensMap[c.id] || {
           id: c.id,
@@ -690,7 +761,6 @@
         };
       });
 
-      // ordena por categoria + ordem fixa
       rows.sort((a,b) => {
         const ca = ORDEM_CATEGORIAS.indexOf(a.categoria);
         const cb = ORDEM_CATEGORIAS.indexOf(b.categoria);
@@ -708,10 +778,10 @@
       const tbody = document.getElementById("tbodyQuadro");
       const rowsAll = buildRowsForDay(currentDia);
       const marks = loadMarks(currentDia);
-
       const rows = rowsAll.filter(withinFilters);
 
       tbody.innerHTML = "";
+
       for(const r of rows){
         const tr = document.createElement("tr");
 
@@ -746,7 +816,6 @@
         tbody.appendChild(tr);
       }
 
-      // binds
       tbody.querySelectorAll(".status-cell").forEach(el => {
         el.addEventListener("click", () => {
           const id = el.getAttribute("data-id");
@@ -823,7 +892,9 @@
       const rowsAll = buildRowsForDay(currentDia);
       const marks = loadMarks(currentDia);
 
-      const pick = (key) => rowsAll.filter(r => (marks[r.id]?.status || r.status) === key).map(r => r.nome);
+      const pick = (key) => rowsAll
+        .filter(r => (marks[r.id]?.status || r.status) === key)
+        .map(r => r.nome);
 
       const abend = pick("abend");
       const cont = pick("contingencia");
@@ -877,7 +948,7 @@ Obs: este resumo considera o JSON + suas marcações locais (se houver).`;
       document.getElementById("selMes").addEventListener("change", (e) => {
         currentMes = e.target.value;
         const dias = buildDiaListForMes(currentMes);
-        currentDia = dias[dias.length-1] || dias[0];
+        currentDia = dias[dias.length-1] || dias[0] || null;
         renderAll();
       });
 
@@ -930,7 +1001,6 @@ Obs: este resumo considera o JSON + suas marcações locais (se houver).`;
         });
       });
 
-      // export/import
       document.getElementById("btnExportar").addEventListener("click", () => {
         const payload = {
           version: 1,
@@ -975,12 +1045,13 @@ Obs: este resumo considera o JSON + suas marcações locais (se houver).`;
     // ======= INIT =======
     (async function init(){
       try{
-        DATA = await loadJson();
+        RAW = await loadJson();
+        DATA = normalizeJson(RAW);
 
         const meses = buildMesList();
         currentMes = meses.includes("2026-01") ? "2026-01" : (meses[0] || "2026-01");
         const dias = buildDiaListForMes(currentMes);
-        currentDia = dias.includes("2026-01-10") ? "2026-01-10" : (dias[dias.length-1] || dias[0]);
+        currentDia = dias.includes("2026-01-10") ? "2026-01-10" : (dias[dias.length-1] || dias[0] || null);
 
         bindUI();
         renderAll();
