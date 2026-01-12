@@ -553,7 +553,7 @@
       return await r.json();
     }
 
-    // ======= NORMALIZACAO (evita quebrar se mudar formato do JSON) =======
+    // ======= NORMALIZACAO =======
     function normalizeJson(json){
       // Formato esperado:
       // { dias: { "YYYY-MM-DD": { updatedAt, itens:[...] } }, catalogo_malhas:[...] }
@@ -561,17 +561,15 @@
         return json;
       }
 
-      // Se vier como { items: ... } ou { data: ... }
+      // Se vier como { data: ... }
       if(json && typeof json === "object" && !Array.isArray(json)){
-        if(json.items && json.dias && json.catalogo_malhas) return json;
         if(json.data && json.data.dias && json.data.catalogo_malhas) return json.data;
       }
 
-      // Se vier como array simples, tenta montar um mínimo:
-      // [{ data:"YYYY-MM-DD", id:"...", status:"..." ... }]
+      // Se vier como array simples
       if(Array.isArray(json)){
         const dias = {};
-        const catalogSet = new Map(); // id -> catalog
+        const catalogSet = new Map();
 
         for(const it of json){
           const dia = it.data || it.odate || it.dia;
@@ -579,7 +577,6 @@
 
           if(!dias[dia]) dias[dia] = { updatedAt: "-", itens: [] };
 
-          // id obrigatório para casar com catálogo
           const id = it.id || it.malha_id || it.nome || it.malha;
           if(!id) continue;
 
@@ -612,7 +609,6 @@
         return { dias, catalogo_malhas: Array.from(catalogSet.values()) };
       }
 
-      // fallback final
       return { dias: {}, catalogo_malhas: [] };
     }
 
@@ -628,25 +624,15 @@
 
     function buildMesList(){
       const dias = Object.keys(DATA.dias || {}).sort();
-      const meses = Array.from(new Set(dias.map(getMesFromDia)));
-      return meses;
+      return Array.from(new Set(dias.map(getMesFromDia)));
     }
 
     function buildDiaListForMes(mes){
-      const dias = Object.keys(DATA.dias || {}).filter(d => d.startsWith(mes + "-")).sort();
-      return dias;
+      return Object.keys(DATA.dias || {}).filter(d => d.startsWith(mes + "-")).sort();
     }
 
     function getDiaData(dia){
       return (DATA.dias && DATA.dias[dia]) ? DATA.dias[dia] : null;
-    }
-
-    function buildCatalogIndex(){
-      const idx = {};
-      for(const c of (DATA.catalogo_malhas || [])){
-        idx[c.id] = c;
-      }
-      return idx;
     }
 
     function canonicalName(s){
@@ -727,7 +713,6 @@
     }
 
     function buildRowsForDay(dia){
-      const catalogIdx = buildCatalogIndex();
       const diaData = getDiaData(dia);
 
       const itensMap = {};
@@ -968,7 +953,7 @@ Obs: este resumo considera o JSON + suas marcações locais (se houver).`;
         filtroTurno = "Todos";
         filtroCat = "Todas";
         document.querySelectorAll('[data-turno]').forEach(b => b.classList.toggle("active", b.getAttribute("data-turno")==="Todos"));
-        document.querySelectorAll('[data-cat]').forEach(b => b.classList.toggle("active", b.getAttribute("data-cat")==="Todas"));
+        document.querySelectorAll('[data-cat]').forEach(b => b.classList.toggle("active", b.getAttribute("data-cat)==="Todas"));
         renderQuadro();
       });
 
