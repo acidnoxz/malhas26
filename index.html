@@ -952,16 +952,16 @@ Obs: este resumo considera o JSON + suas marcações locais (se houver).`;
         document.getElementById("busca").value = "";
         filtroTurno = "Todos";
         filtroCat = "Todas";
-        document.querySelectorAll('[data-turno]').forEach(b => b.classList.toggle("active", b.getAttribute("data-turno")==="Todos"));
-        document.querySelectorAll('[data-cat]').forEach(b => b.classList.toggle("active", b.getAttribute("data-cat)==="Todas"));
-        renderQuadro();
-      });
 
-      document.querySelectorAll('[data-turno]').forEach(btn => {
-        btn.addEventListener("click", () => {
-          filtroTurno = btn.getAttribute("data-turno");
-          document.querySelectorAll('[data-turno]').forEach(b => b.classList.toggle("active", b===btn));
-          renderQuadro();
+      document.querySelectorAll('[data-turno]').forEach(b =>
+      b.classList.toggle("active", b.getAttribute("data-turno") === "Todos")
+    );
+
+  document.querySelectorAll('[data-cat]').forEach(b =>
+    b.classList.toggle("active", b.getAttribute("data-cat") === "Todas")
+  );
+
+         renderQuadro();
         });
       });
 
@@ -1048,3 +1048,4 @@ Obs: este resumo considera o JSON + suas marcações locais (se houver).`;
   </script>
 </body>
 </html>
+
